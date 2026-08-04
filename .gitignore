@@ -1,0 +1,34 @@
+# Dependencies (Tailwind local build artifacts, if user re-builds)
+node_modules/
+package-lock.json
+
+# Test / verification artifacts
+test-*.png
+verify-*.png
+online-*.png
+final-*.png
+preview-*.png
+__wrap-*.html
+__setlang.html
+en-prep.html
+.measure-*.png
+
+# Local Chrome user-data dirs (used for headless screenshot verification)
+.chrome-*
+.chrome*
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# OS
+.DS_Store
+desktop.ini
+
+# Env / secrets (defensive — none in this project, but never commit them)
+.env
+.env.local
+secrets.json

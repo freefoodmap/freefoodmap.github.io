@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Food Map · 全球免费食品发放点 · 一张饼开始的善意</title>
+  <meta name="description" content="一张地图,串起全球 60+ 个免费食品发放点。灵感来自在洛杉矶为流浪汉免费做酱香饼的河南小伙'小唐'。这里有故事、视频,也有如何开始做免费食品发放的完整指南。" />
+  <meta name="theme-color" content="#0f172a" />
+
+  <!-- Fonts & UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+  <!-- Tailwind (pre-built locally, no CDN dependency) -->
+  <link rel="stylesheet" href="tailwind.css" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23f4a52a'/%3E%3Ccircle cx='32' cy='32' r='20' fill='%23e84c1c'/%3E%3C/svg%3E" />
+</head>
+<body class="bg-cream text-ink font-sans antialiased">
+
+  <!-- ============ NAV ============ -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-ink/80 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="#top" class="flex items-center gap-2 group">
+        <span class="text-2xl animate-breathe">🥯</span>
+        <span class="font-bold text-white tracking-tight" data-i18n="navBrand">Free Food Map<span class="text-crust">.</span></span>
+      </a>
+      <div class="hidden md:flex items-center gap-7 text-sm text-white/70">
+        <a href="#story" class="hover:text-crust transition" data-i18n="navStory">故事</a>
+        <a href="#map" class="hover:text-crust transition" data-i18n="navMap">地图</a>
+        <a href="#videos" class="hover:text-crust transition" data-i18n="navVideos">视频</a>
+        <a href="#guide" class="hover:text-crust transition" data-i18n="navGuide">如何开始</a>
+        <a href="#submit" class="px-3 py-1.5 rounded-full bg-crust/20 text-crust border border-crust/30 hover:bg-crust/30 transition" data-i18n="navSubmit">提交新发放点</a>
+        <!-- Language switcher -->
+        <button id="lang-toggle" class="ml-1 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-mono uppercase tracking-wider hover:bg-white/10 hover:text-white transition flex items-center gap-1.5" aria-label="Toggle language">
+          <span class="text-crust">●</span>
+          <span id="lang-toggle-label">EN</span>
+        </button>
+      </div>
+      <div class="md:hidden flex items-center gap-2">
+        <button id="lang-toggle-mobile" class="px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-mono uppercase tracking-wider" aria-label="Toggle language">
+          <span id="lang-toggle-label-mobile">EN</span>
+        </button>
+        <button id="nav-toggle" class="text-white text-2xl">☰</button>
+      </div>
+    </div>
+    <div id="nav-menu" class="hidden md:hidden bg-ink border-t border-white/5 px-6 py-3 space-y-2 text-sm text-white/80">
+      <a href="#story" class="block hover:text-crust" data-i18n="navStory">故事</a>
+      <a href="#map" class="block hover:text-crust" data-i18n="navMap">地图</a>
+      <a href="#videos" class="block hover:text-crust" data-i18n="navVideos">视频</a>
+      <a href="#guide" class="block hover:text-crust" data-i18n="navGuide">如何开始</a>
+      <a href="#submit" class="block text-crust" data-i18n="navSubmit">提交新发放点</a>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <section id="top" class="relative pt-16 pb-12 sm:pb-20 overflow-hidden bg-ink text-white">
+    <div class="absolute inset-0 opacity-30">
+      <div class="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-crust/30 blur-3xl animate-float"></div>
+      <div class="absolute -bottom-40 -right-40 w-[600px] h-[600px] rounded-full bg-ember/20 blur-3xl animate-float" style="animation-delay: 2s"></div>
+      <div class="absolute top-1/3 left-1/2 w-[400px] h-[400px] rounded-full bg-orange-500/20 blur-3xl animate-float" style="animation-delay: 4s"></div>
+    </div>
+
+    <div class="absolute inset-0 opacity-[0.04]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 60px 60px;"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 lg:pt-24 lg:pb-32">
+      <div class="grid lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7 space-y-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-crust uppercase tracking-wider">
+            <span class="w-1.5 h-1.5 bg-crust rounded-full animate-pulse"></span>
+            <span data-i18n="heroTag">A community map · built by volunteers</span>
+          </div>
+
+          <p class="font-serif text-base sm:text-lg text-white/85 italic leading-relaxed border-l-2 border-crust/60 pl-4 max-w-xl" data-i18n="heroSlogan">AI 时代，请让全球温饱成为人文基础。</p>
+
+          <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.05] tracking-tight">
+            <span data-i18n="heroH1a">AI 时代,</span><br />
+            <span class="bg-gradient-to-r from-crust via-ember to-orange-400 bg-clip-text text-transparent" data-i18n="heroH1b">重新设计分配。</span>
+          </h1>
+
+          <p class="text-lg sm:text-xl text-white/70 leading-relaxed max-w-2xl" data-i18n="heroSub">在 AI 能写诗、能开车的 2026 年,全球仍有 <b class="text-white">7.3 亿+</b> 人挨饿,每年 <b class="text-white">13 亿吨</b> 食物被浪费。<b class="text-crust">技术最大的善意,是重新设计分配机制。</b>  免费食物,是这场变革的起点。</p>
+
+          <div class="flex flex-wrap gap-4 pt-2">
+            <a href="#map" class="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-crust text-ink font-semibold hover:bg-crust/90 transition">
+              <span data-i18n="heroCTA1">打开地图</span>
+              <span class="group-hover:translate-x-1 transition">→</span>
+            </a>
+            <a href="#guide" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/5 border border-white/15 text-white hover:bg-white/10 transition" data-i18n="heroCTA2">我也想开始发 → 完整指南</a>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 pt-6 max-w-xl">
+            <div>
+              <div class="text-3xl sm:text-4xl font-bold text-crust" id="stat-points">—</div>
+              <div class="text-xs text-white/50 mt-1 font-mono" data-i18n="statPoints">发放点 · 全球</div>
+            </div>
+            <div>
+              <div class="text-3xl sm:text-4xl font-bold text-ember" id="stat-countries">—</div>
+              <div class="text-xs text-white/50 mt-1 font-mono" data-i18n="statCountries">国家/地区</div>
+            </div>
+            <div>
+              <div class="text-3xl sm:text-4xl font-bold text-orange-300" id="stat-videos">—</div>
+              <div class="text-xs text-white/50 mt-1 font-mono" data-i18n="statVideos">真实视频</div>
+            </div>
+          </div>
+
+          <div class="pt-3 text-xs text-white/40 font-mono flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span data-i18n="heroInspiration">灵感来源 · 2026 年,一位在洛杉矶免费发酱香饼的 90 后。</span>
+            <a href="#story" class="text-crust hover:underline" data-i18n="heroInspirationLink">看完整故事 →</a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="grid grid-cols-2 gap-3">
+            <div class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-crust/40 transition group">
+              <div class="text-3xl sm:text-4xl font-extrabold text-crust leading-none" data-i18n="stat1N">7.3亿+</div>
+              <div class="text-sm text-white/70 mt-2" data-i18n="stat1L">全球面临饥饿的人数</div>
+              <div class="text-[10px] text-white/40 mt-2 font-mono uppercase tracking-wider" data-i18n="stat1S">UN WFP · 2024</div>
+            </div>
+            <div class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-ember/40 transition group">
+              <div class="text-3xl sm:text-4xl font-extrabold text-ember leading-none" data-i18n="stat2N">13亿吨</div>
+              <div class="text-sm text-white/70 mt-2" data-i18n="stat2L">全球每年被浪费的食物</div>
+              <div class="text-[10px] text-white/40 mt-2 font-mono uppercase tracking-wider" data-i18n="stat2S">FAO · 2024</div>
+            </div>
+            <div class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-orange-300/40 transition group">
+              <div class="text-3xl sm:text-4xl font-extrabold text-orange-300 leading-none" data-i18n="stat3N">1/7</div>
+              <div class="text-sm text-white/70 mt-2" data-i18n="stat3L">美国 7 人中 1 人食物不安全</div>
+              <div class="text-[10px] text-white/40 mt-2 font-mono uppercase tracking-wider" data-i18n="stat3S">Feeding America</div>
+            </div>
+            <div class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-emerald-300/40 transition group">
+              <div class="text-3xl sm:text-4xl font-extrabold text-emerald-300 leading-none" data-i18n="stat4N">200+</div>
+              <div class="text-sm text-white/70 mt-2" data-i18n="stat4L">Feeding America 旗下食品银行数</div>
+              <div class="text-[10px] text-white/40 mt-2 font-mono uppercase tracking-wider" data-i18n="stat4S">Covers all 50 US states</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hidden lg:flex justify-center pt-20 text-white/40 text-xs font-mono">
+        <div class="flex flex-col items-center gap-2">
+          <span data-i18n="scroll">SCROLL</span>
+          <div class="w-px h-12 bg-gradient-to-b from-white/40 to-transparent"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATS BAR ============ -->
+  <section class="bg-gradient-to-b from-ink to-[#0a0f1e] border-y border-white/5 text-white py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <div class="text-xs font-mono text-crust uppercase tracking-widest mb-3" data-i18n="statsTag">THE BIG PICTURE</div>
+        <h2 class="text-2xl sm:text-3xl font-bold" data-i18n="statsH2">世界比你想的更饿,也比你想的更暖。</h2>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STORY · 小唐 ============ -->
+  <section id="story" class="py-24 sm:py-32 bg-cream">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mb-16">
+        <div class="text-xs font-mono text-ember uppercase tracking-widest mb-3" data-i18n="storyTag">#001 · THE ORIGIN STORY</div>
+        <h2 class="text-4xl sm:text-5xl font-bold tracking-tight leading-tight" data-i18n="storyH2">故事从一张 60 美元的酱香饼开始。</h2>
+        <p class="text-lg text-ink/70 mt-5 leading-relaxed" data-i18n="storyP1">2022 年,一个不会说英语的河南小伙独自飞到了洛杉矶。</p>
+        <p class="text-lg text-ink/70 mt-4 leading-relaxed" data-i18n="storyP2">然后他被举报无证经营、被女徒弟背刺、被警察带走。</p>
+        <p class="text-lg text-ink/80 mt-4 leading-relaxed font-serif italic border-l-4 border-ember pl-5" data-i18n="storyP3">但他没走。他把摊位搬到了贫民区,开始免费发酱香饼。</p>
+        <p class="text-lg text-ink/70 mt-4 leading-relaxed" data-i18n="storyP4">2026 年 4 月,他真的宣布参选 2029 年的洛杉矶市长。</p>
+      </div>
+
+      <div class="relative max-w-4xl">
+        <div class="absolute left-0 sm:left-1/2 top-0 bottom-0 w-px bg-ink/15 sm:-translate-x-1/2"></div>
+        <div class="space-y-12">
+          <div class="relative grid sm:grid-cols-2 gap-8 sm:gap-12">
+            <div class="sm:text-right sm:pr-12">
+              <div class="text-xs font-mono text-ember" data-i18n="storyTL2022T">2022</div>
+              <div class="font-bold text-lg mt-1" data-i18n="storyTL2022L">独闯洛杉矶</div>
+              <p class="text-ink/60 text-sm mt-1" data-i18n="storyTL2022D">英语不通,但心里有一张中国味的饼。</p>
+            </div>
+            <div class="absolute left-0 sm:left-1/2 top-2 -translate-x-1/2 w-3 h-3 rounded-full bg-ember ring-4 ring-cream"></div>
+            <div></div>
+          </div>
+          <div class="relative grid sm:grid-cols-2 gap-8 sm:gap-12">
+            <div></div>
+            <div class="absolute left-0 sm:left-1/2 top-2 -translate-x-1/2 w-3 h-3 rounded-full bg-crust ring-4 ring-cream"></div>
+            <div class="sm:pl-12">
+              <div class="text-xs font-mono text-crust" data-i18n="storyTL2024T">2024</div>
+              <div class="font-bold text-lg mt-1" data-i18n="storyTL2024L">60 美元一张的酱香饼</div>
+              <p class="text-ink/60 text-sm mt-1" data-i18n="storyTL2024D">月入 2 万美元,"酱香饼刺客"全网刷屏。</p>
+            </div>
+          </div>
+          <div class="relative grid sm:grid-cols-2 gap-8 sm:gap-12">
+            <div class="sm:text-right sm:pr-12">
+              <div class="text-xs font-mono text-ember" data-i18n="storyTL2025T">2025.7</div>
+              <div class="font-bold text-lg mt-1" data-i18n="storyTL2025L">两次被捕 / 13 万保释金</div>
+              <p class="text-ink/60 text-sm mt-1" data-i18n="storyTL2025D">被举报、被徒弟背刺、被警察拷走……普通人早放弃了。</p>
+            </div>
+            <div class="absolute left-0 sm:left-1/2 top-2 -translate-x-1/2 w-3 h-3 rounded-full bg-ember ring-4 ring-cream"></div>
+            <div></div>
+          </div>
+          <div class="relative grid sm:grid-cols-2 gap-8 sm:gap-12">
+            <div></div>
+            <div class="absolute left-0 sm:left-1/2 top-2 -translate-x-1/2 w-3 h-3 rounded-full bg-crust ring-4 ring-cream"></div>
+            <div class="sm:pl-12">
+              <div class="text-xs font-mono text-crust" data-i18n="storyTL2026aT">2026.4</div>
+              <div class="font-bold text-lg mt-1" data-i18n="storyTL2026aL">宣布 2029 竞选洛杉矶市长</div>
+              <p class="text-ink/60 text-sm mt-1" data-i18n="storyTL2026aD">不再卖饼,摊位搬到贫民区,免费派发酱香饼。</p>
+            </div>
+          </div>
+          <div class="relative grid sm:grid-cols-2 gap-8 sm:gap-12">
+            <div class="sm:text-right sm:pr-12">
+              <div class="text-xs font-mono text-ember" data-i18n="storyTL2026bT">2026.5.20</div>
+              <div class="font-bold text-lg mt-1" data-i18n="storyTL2026bL">走进圣盖博市政厅</div>
+              <p class="text-ink/60 text-sm mt-1" data-i18n="storyTL2026bD">代表华裔居民发言,当地华人电视台全程直播。</p>
+            </div>
+            <div class="absolute left-0 sm:left-1/2 top-2 -translate-x-1/2 w-3 h-3 rounded-full bg-ember ring-4 ring-cream"></div>
+            <div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16 p-6 sm:p-8 rounded-2xl bg-ink text-white max-w-3xl">
+        <div class="font-serif text-2xl leading-snug" data-i18n="storyQuote">"我一个人卖饼可能改变不了什么。<br />但如果很多人在很多地方,都在做类似的事——<br />那就不只是饼,是一张网。"</div>
+        <div class="text-xs text-white/40 mt-4 font-mono" data-i18n="storyQuoteSrc">— 改编自小唐视频原话</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MAP ============ -->
+  <section id="map" class="py-24 sm:py-32 bg-ink text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <div class="text-xs font-mono text-crust uppercase tracking-widest mb-3" data-i18n="mapTag">#002 · THE MAP</div>
+        <h2 class="text-4xl sm:text-5xl font-bold tracking-tight leading-tight" data-i18n="mapH2">全球 60+ 个免费食品发放点</h2>
+        <p class="text-white/60 mt-5" data-i18n="mapSub">点击地图上的图标,可以看到发放时间、电话和官网。</p>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-2 mb-6">
+        <button class="map-filter chip active" data-type="all" data-i18n="mapFilterAll">全部</button>
+        <button class="map-filter chip" data-type="foodbank" data-i18n="mapFilterFoodbank">Food Bank</button>
+        <button class="map-filter chip" data-type="pantry" data-i18n="mapFilterPantry">Food Pantry</button>
+        <button class="map-filter chip" data-type="soup_kitchen" data-i18n="mapFilterSoup">Soup Kitchen</button>
+        <button class="map-filter chip" data-type="street" data-i18n="mapFilterStreet">街头免费</button>
+        <button class="map-filter chip" data-type="smart_cabinet" data-i18n="mapFilterSmart">智能食物柜</button>
+        <button class="map-filter chip" data-type="school_meal" data-i18n="mapFilterSchool">校园供餐</button>
+        <button class="map-filter chip" data-type="drive_thru" data-i18n="mapFilterDrive">Drive-Through</button>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-9">
+          <div id="map-canvas" class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl" style="height: 560px;"></div>
+        </div>
+        <aside class="lg:col-span-3 space-y-3 max-h-[560px] overflow-y-auto pr-2" id="map-list">
+          <div class="text-xs text-white/40 font-mono uppercase tracking-wider" data-i18n="mapListTitle">最近浏览</div>
+        </aside>
+      </div>
+
+      <p class="text-center text-xs text-white/40 mt-6" data-i18n="mapNote">* 数据由志愿者整理,具体服务时间以各机构最新公布为准。</p>
+    </div>
+  </section>
+
+  <!-- ============ VIDEOS ============ -->
+  <section id="videos" class="py-24 sm:py-32 bg-cream">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mb-12">
+        <div class="text-xs font-mono text-ember uppercase tracking-widest mb-3" data-i18n="videosTag">#003 · SEE IT HAPPEN</div>
+        <h2 class="text-4xl sm:text-5xl font-bold tracking-tight leading-tight" data-i18n="videosH2a">这些场景,正在发生。</h2>
+        <p class="text-lg text-ink/70 mt-5" data-i18n="videosSub">视频是最好的传播——一段视频能顶一千个公告。</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Video 1: 小唐 - 月入 10 万 / 被当街拷走 -->
+        <div class="video-card group">
+          <div class="relative aspect-video rounded-xl overflow-hidden bg-ink">
+            <iframe src="//player.bilibili.com/player.html?bvid=BV1i7gaz4EAm&autoplay=0&page=1" scrolling="no" frameborder="0" allowfullscreen="true"></iframe>
+          </div>
+          <div class="pt-4">
+            <div class="flex items-center gap-2 text-xs text-ember font-mono mb-1">
+              <span class="w-1.5 h-1.5 bg-ember rounded-full"></span>
+              <span data-i18n="video1Tag">B 站 · 小唐美国游</span>
+            </div>
+            <h3 class="font-bold text-lg leading-tight" data-i18n="video1Title">在 LA 月入 10 万,小唐被当街拷走</h3>
+            <p class="text-sm text-ink/60 mt-1" data-i18n="video1Meta">2025.7 · 257 万播放 · 小唐酱香饼事件始末</p>
+          </div>
+        </div>
+
+        <!-- Video 2 -->
+        <div class="video-card group">
+          <div class="relative aspect-video rounded-xl overflow-hidden bg-ink">
+            <iframe src="//player.bilibili.com/player.html?bvid=BV1U9gYzDEA3&autoplay=0&page=1" scrolling="no" frameborder="0" allowfullscreen="true"></iframe>
+          </div>
+          <div class="pt-4">
+            <div class="flex items-center gap-2 text-xs text-ember font-mono mb-1">
+              <span class="w-1.5 h-1.5 bg-ember rounded-full"></span>
+              <span data-i18n="video2Tag">B 站 · 小李纪录片</span>
+            </div>
+            <h3 class="font-bold text-lg leading-tight" data-i18n="video2Title">真心传授技能,被女徒弟背刺</h3>
+            <p class="text-sm text-ink/60 mt-1" data-i18n="video2Meta">2025.7 · 5.2 万播放 · 完整记录小唐被徒弟起诉全过程</p>
+          </div>
+        </div>
+
+        <!-- Video 3 -->
+        <div class="video-card group">
+          <div class="relative aspect-video rounded-xl overflow-hidden bg-ink">
+            <iframe src="//player.bilibili.com/player.html?bvid=BV1Lnb4zREKL&autoplay=0&page=1" scrolling="no" frameborder="0" allowfullscreen="true"></iframe>
+          </div>
+          <div class="pt-4">
+            <div class="flex items-center gap-2 text-xs text-ember font-mono mb-1">
+              <span class="w-1.5 h-1.5 bg-ember rounded-full"></span>
+              <span data-i18n="video3Tag">B 站 · 文言文练习生李军</span>
+            </div>
+            <h3 class="font-bold text-lg leading-tight" data-i18n="video3Title">2025.8.15 小唐酱香饼在美国 (70 分钟实录)</h3>
+            <p class="text-sm text-ink/60 mt-1" data-i18n="video3Meta">2025.8 · 完整的出摊、送饼、被举报一天</p>
+          </div>
+        </div>
+
+        <!-- Video 4: YouTube CTA -->
+        <a href="https://www.youtube.com/results?search_query=free+food+bank+giveaway" target="_blank" rel="noopener" class="video-card group block">
+          <div class="relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-ember to-crust flex items-center justify-center">
+            <div class="text-center text-ink p-6">
+              <div class="text-6xl mb-3">▶</div>
+              <div class="text-xl font-bold" data-i18n="video4CTA">在 YouTube 看更多</div>
+              <div class="text-sm opacity-75 mt-1" data-i18n="video4CTA2">"free food giveaway" / "food bank volunteer" 搜索</div>
+            </div>
+          </div>
+          <div class="pt-4">
+            <div class="flex items-center gap-2 text-xs text-ember font-mono mb-1">
+              <span class="w-1.5 h-1.5 bg-ember rounded-full"></span>
+              <span data-i18n="video4Tag">YouTube · 全球</span>
+            </div>
+            <h3 class="font-bold text-lg leading-tight" data-i18n="video4Title">数千段街头真实发放视频</h3>
+            <p class="text-sm text-ink/60 mt-1" data-i18n="video4Meta">点此跳转到 YouTube,搜"free food bank" / "food giveaway"</p>
+          </div>
+        </a>
+
+        <!-- Video 5: B站 CTA -->
+        <a href="https://search.bilibili.com/all?keyword=食物银行" target="_blank" rel="noopener" class="video-card group block">
+          <div class="relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-rose-500 to-amber-500 flex items-center justify-center">
+            <div class="text-center text-white p-6">
+              <div class="text-6xl mb-3">▶</div>
+              <div class="text-xl font-bold" data-i18n="video5CTA">在 B 站看更多</div>
+              <div class="text-sm opacity-90 mt-1" data-i18n="video5CTA2">"食物银行" / "免费发放" / "公益" 搜索</div>
+            </div>
+          </div>
+          <div class="pt-4">
+            <div class="flex items-center gap-2 text-xs text-ember font-mono mb-1">
+              <span class="w-1.5 h-1.5 bg-ember rounded-full"></span>
+              <span data-i18n="video5Tag">哔哩哔哩 · 中文</span>
+            </div>
+            <h3 class="font-bold text-lg leading-tight" data-i18n="video5Title">从深圳 24h 食物银行到绿洲盛食社</h3>
+            <p class="text-sm text-ink/60 mt-1" data-i18n="video5Meta">点此跳转到 B 站,搜"食物银行"</p>
+          </div>
+        </a>
+
+        <!-- Video 6: 抖音 CTA -->
+        <a href="https://www.douyin.com/search/%E5%85%8D%E8%B4%B9%E5%8F%91%E6%94%BE%E9%A3%9F%E5%93%81" target="_blank" rel="noopener" class="video-card group block">
+          <div class="relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center">
+            <div class="text-center text-white p-6">
+              <div class="text-6xl mb-3">▶</div>
+              <div class="text-xl font-bold" data-i18n="video6CTA">在抖音看更多</div>
+              <div class="text-sm opacity-90 mt-1" data-i18n="video6CTA2">小唐、丁胖子金牌讲师、流浪动物救助…</div>
+            </div>
+          </div>
+          <div class="pt-4">
+            <div class="flex items-center gap-2 text-xs text-ember font-mono mb-1">
+              <span class="w-1.5 h-1.5 bg-ember rounded-full"></span>
+              <span data-i18n="video6Tag">抖音 / TikTok · 短视频</span>
+            </div>
+            <h3 class="font-bold text-lg leading-tight" data-i18n="video6Title">街头最真实的画面,都在这里</h3>
+            <p class="text-sm text-ink/60 mt-1" data-i18n="video6Meta">点此跳转到抖音,搜"免费发放"</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="text-center mt-12 text-sm text-ink/50">
+        <span data-i18n="videosMore">想看更多真实发放视频?</span>
+        <a href="https://www.youtube.com/results?search_query=free+food+bank+giveaway" target="_blank" rel="noopener" class="text-ember underline" data-i18n="videosMoreYT">YouTube 搜索 ·</a>
+        <a href="https://search.bilibili.com/all?keyword=食物银行" target="_blank" rel="noopener" class="text-ember underline ml-3" data-i18n="videosMoreBV">B 站搜索 ·</a>
+        <a href="#submit" class="text-ember underline ml-3" data-i18n="videosMoreSub">或提交视频链接</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GUIDE ============ -->
+  <section id="guide" class="py-24 sm:py-32 bg-gradient-to-b from-ink to-[#0a0f1e] text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20 pointer-events-none">
+      <div class="absolute -top-40 right-1/4 w-96 h-96 rounded-full bg-crust/20 blur-3xl"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mb-16">
+        <div class="text-xs font-mono text-crust uppercase tracking-widest mb-3" data-i18n="guideTag">#004 · HOW TO START</div>
+        <h2 class="text-4xl sm:text-5xl font-bold tracking-tight leading-tight">
+          <span data-i18n="guideH2a">我也想开始。</span><br />
+          <span data-i18n="guideH2b" class="text-crust">该怎么做?</span>
+        </h2>
+        <p class="text-lg text-white/70 mt-5 leading-relaxed" data-i18n="guideSub">不需要大资金、不需要 NGO 资质。哪怕是 50 元钱 + 一个周末,就能做一次小型的免费食品发放。</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="step-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-full bg-crust/20 text-crust font-bold flex items-center justify-center border border-crust/30">01</div>
+            <div class="text-xs font-mono uppercase tracking-wider text-crust" data-i18n="step1T">Find your why</div>
+          </div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="step1H">想清楚为什么</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="step1D">是想帮流浪汉?社区独居老人?学生?想清楚了,你才能撑过举报、警察、不理解。</p>
+        </div>
+        <div class="step-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-full bg-crust/20 text-crust font-bold flex items-center justify-center border border-crust/30">02</div>
+            <div class="text-xs font-mono uppercase tracking-wider text-crust" data-i18n="step2T">Mini pilot</div>
+          </div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="step2H">先做最小版本</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="step2D">不要一开始就搞 1000 人。先做 30 人。</p>
+        </div>
+        <div class="step-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-full bg-crust/20 text-crust font-bold flex items-center justify-center border border-crust/30">03</div>
+            <div class="text-xs font-mono uppercase tracking-wider text-crust" data-i18n="step3T">Know the law</div>
+          </div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="step3H">先看当地法规</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="step3D">中国大多数城市支持"邻里互助",但食品来源、发放点选址、食安标准有要求。</p>
+        </div>
+        <div class="step-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-full bg-crust/20 text-crust font-bold flex items-center justify-center border border-crust/30">04</div>
+            <div class="text-xs font-mono uppercase tracking-wider text-crust" data-i18n="step4T">Sourcing</div>
+          </div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="step4H">食物从哪儿来?</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="step4D">四个主要渠道:① 自掏腰包;② 临期超市/烘焙店捐赠;③ 联系当地 food bank;④ 餐饮店收尾餐。</p>
+        </div>
+        <div class="step-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-full bg-crust/20 text-crust font-bold flex items-center justify-center border border-crust/30">05</div>
+            <div class="text-xs font-mono uppercase tracking-wider text-crust" data-i18n="step5T">Record it</div>
+          </div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="step5H">拍视频。这是小唐最大的招。</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="step5D">一段 60 秒的真实视频,可能带来 100 倍的传播。</p>
+        </div>
+        <div class="step-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-full bg-crust/20 text-crust font-bold flex items-center justify-center border border-crust/30">06</div>
+            <div class="text-xs font-mono uppercase tracking-wider text-crust" data-i18n="step6T">Scale up</div>
+          </div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="step6H">做 3 次,再谈扩张</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="step6D">连续做 3 次,把流程跑通。然后拉 2-3 个朋友一起。</p>
+        </div>
+      </div>
+
+      <div class="mt-16 max-w-4xl mx-auto">
+        <h3 class="text-2xl font-bold mb-6" data-i18n="tipsH">前辈踩过的坑,提前告诉你</h3>
+        <div class="space-y-3">
+          <div class="tip-row">
+            <div class="text-ember text-xl">⚠</div>
+            <div>
+              <div class="font-bold" data-i18n="tip1H">被举报怎么办?</div>
+              <p class="text-white/60 text-sm mt-1" data-i18n="tip1D">准备好执照、卫生证明、合作协议;被举报时保持微笑,先配合。</p>
+            </div>
+          </div>
+          <div class="tip-row">
+            <div class="text-ember text-xl">⚠</div>
+            <div>
+              <div class="font-bold" data-i18n="tip2H">怎么避免被消耗?</div>
+              <p class="text-white/60 text-sm mt-1" data-i18n="tip2D">不要每周发 7 天。固定 1-2 天,其他时间留给自己的生活和工作。</p>
+            </div>
+          </div>
+          <div class="tip-row">
+            <div class="text-ember text-xl">⚠</div>
+            <div>
+              <div class="font-bold" data-i18n="tip3H">怎么拿到钱?</div>
+              <p class="text-white/60 text-sm mt-1" data-i18n="tip3D">视频流量分成、企业冠名、众筹、当地 church 拨款、餐厅尾餐折现。</p>
+            </div>
+          </div>
+          <div class="tip-row">
+            <div class="text-ember text-xl">⚠</div>
+            <div>
+              <div class="font-bold" data-i18n="tip4H">要不要注册 NGO?</div>
+              <p class="text-white/60 text-sm mt-1" data-i18n="tip4D">先做 1 年再说。注册成本高、合规要求多,先做 informal network。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-20">
+        <div class="font-serif text-2xl sm:text-3xl max-w-2xl mx-auto leading-snug" data-i18n="ctaQuote">小唐一个人做不了所有的事。<br />但你,加上地图上几十个邻居,可以。</div>
+        <a href="#submit" class="inline-flex items-center gap-2 mt-8 px-7 py-4 rounded-full bg-crust text-ink font-semibold hover:bg-crust/90 transition" data-i18n="ctaButton">我要加入 · 提交一个发放点 →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SUBMIT FORM ============ -->
+  <section id="submit" class="py-24 sm:py-32 bg-cream">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <div class="text-xs font-mono text-ember uppercase tracking-widest mb-3" data-i18n="submitTag">#005 · JOIN THE MAP</div>
+        <h2 class="text-4xl sm:text-5xl font-bold tracking-tight" data-i18n="submitH2">你的城市,加一个点。</h2>
+        <p class="text-ink/60 mt-4 text-lg" data-i18n="submitSub">任何形式的免费食品发放都欢迎提交。</p>
+      </div>
+
+      <form id="submit-form" class="space-y-5 bg-white rounded-2xl p-7 sm:p-10 border border-ink/5 shadow-sm">
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-medium text-ink/80 mb-1.5" data-i18n="formName">名称 *</label>
+            <input required name="name" type="text" data-i18n-placeholder="formNamePh"
+              class="w-full px-4 py-3 rounded-lg border border-ink/15 focus:border-crust focus:ring-2 focus:ring-crust/20 outline-none transition" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink/80 mb-1.5" data-i18n="formCity">城市 / 地区 *</label>
+            <input required name="city" type="text" data-i18n-placeholder="formCityPh"
+              class="w-full px-4 py-3 rounded-lg border border-ink/15 focus:border-crust focus:ring-2 focus:ring-crust/20 outline-none transition" />
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-medium text-ink/80 mb-1.5" data-i18n="formType">类型</label>
+            <select name="type" class="w-full px-4 py-3 rounded-lg border border-ink/15 focus:border-crust focus:ring-2 focus:ring-crust/20 outline-none transition">
+              <option value="street" data-i18n="typeStreet">街头免费发放</option>
+              <option value="foodbank" data-i18n="typeFoodbank">Food Bank / 食物银行</option>
+              <option value="pantry" data-i18n="typePantry">Food Pantry / 食物柜</option>
+              <option value="soup_kitchen" data-i18n="typeSoup">Soup Kitchen / 流动餐</option>
+              <option value="smart_cabinet" data-i18n="typeSmart">智能食物柜</option>
+              <option value="school_meal" data-i18n="typeSchool">校园供餐</option>
+              <option value="drive_thru" data-i18n="typeDrive">Drive-Through</option>
+              <option value="other" data-i18n="typeOther">其他</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink/80 mb-1.5" data-i18n="formContact">联系方式 (邮箱/电话/链接)</label>
+            <input name="contact" type="text" data-i18n-placeholder="formContactPh"
+              class="w-full px-4 py-3 rounded-lg border border-ink/15 focus:border-crust focus:ring-2 focus:ring-crust/20 outline-none transition" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-ink/80 mb-1.5" data-i18n="formDesc">说明 / 视频链接</label>
+          <textarea name="desc" rows="4" data-i18n-placeholder="formDescPh"
+            class="w-full px-4 py-3 rounded-lg border border-ink/15 focus:border-crust focus:ring-2 focus:ring-crust/20 outline-none transition"></textarea>
+        </div>
+        <div class="flex items-start gap-3">
+          <input required type="checkbox" id="confirm" class="mt-1" />
+          <label for="confirm" class="text-sm text-ink/70" data-i18n="formConfirm">我确认这是真实、免费、对外开放的食品发放点。</label>
+        </div>
+        <button type="submit" class="w-full px-6 py-4 rounded-xl bg-ink text-white font-semibold hover:bg-ink/90 transition flex items-center justify-center gap-2">
+          <span data-i18n="formSubmit">提交到地图</span>
+          <span class="font-mono text-xs opacity-60" data-i18n="formSubmitNote">(开发中)</span>
+        </button>
+        <p class="text-xs text-ink/50 text-center" data-i18n="formHelp">这是一个 open-source 项目。提交的内容我们会人工审核。</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="bg-ink text-white/60 pt-20 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-3 gap-10 pb-10 border-b border-white/10">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-2xl">🥯</span>
+            <span class="font-bold text-white" data-i18n="navBrand">Free Food Map</span>
+          </div>
+          <p class="text-sm leading-relaxed" data-i18n="footerTagline">一个由志愿者维护的全球免费食品发放点地图。</p>
+          <p class="font-serif text-sm text-crust/90 italic leading-relaxed mt-3 border-l-2 border-crust/40 pl-3" data-i18n="footerSlogan">AI 时代，请让全球温饱成为人文基础。</p>
+        </div>
+        <div>
+          <div class="text-xs font-mono uppercase tracking-wider text-crust mb-3" data-i18n="footerData">数据来源</div>
+          <ul class="space-y-1.5 text-sm" data-i18n="footerDataList">
+            <li>Feeding America · Trussell Trust</li>
+          </ul>
+        </div>
+        <div>
+          <div class="text-xs font-mono uppercase tracking-wider text-crust mb-3" data-i18n="footerJoin">参与</div>
+          <ul class="space-y-1.5 text-sm" data-i18n="footerJoinList">
+            <li>提交新发放点</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-6 text-xs font-mono text-white/30 flex flex-col sm:flex-row justify-between gap-3">
+        <div data-i18n="footerCopy">© 2026 Free Food Map · Made with 🥯 and a lot of care</div>
+        <div data-i18n="footerNote">This is an open, non-commercial volunteer project.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="data.js"></script>
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
