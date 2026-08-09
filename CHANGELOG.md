@@ -7,7 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.4.0] - 2026-08-09 · The Network (#ambassadors section)
+## [1.4.0] - 2026-08-10 · The Network + Promotion Playbook
+
+Two additions to convert viewers into participants.
+
+### Added (The Network)
+- **New `#ambassadors` section** between `#guide` and `#submit` — emerald-tinted dark theme for visual distinction
+  - **6 role cards** (engineer / local contact / translator / story collector / outreach / designer) with skills tags
+  - **Current network** list: 1 filled founder card (Andy Zhuang) + 5 empty dashed "your slot" placeholders with `← 你的位置` / `← YOUR SLOT` hint
+  - **3-step "How to join"** flow: open issue/PR or email → we reply within a week → co-build next version
+  - **CTAs**: GitHub issues (emerald button) + `mailto:open@freefoodmap.org`
+  - Closing quote: *"The world is changed not by one person, but by the network of people who choose to show up."*
+- **Nav link** `#ambassadors` (emerald hover, between "如何开始" and "提交新发放点")
+- **44 new i18n keys** in both `zh` and `en` (240 total in dict, 238 used in HTML)
+- **New CSS classes** in `style.css`: `.amb-card`, `.amb-person-filled`, `.amb-person-empty` (with `::after` slot hint), `.amb-step`, `.amb-step-num`
+
+### Added (Promotion Playbook)
+- **`promotion/` directory** — 13 files (~70KB total) for version-controlled promotion work
+  - `promotion/README.md` — index
+  - `promotion/00-STRATEGY.md` — 30-day rollout plan, 3 audience types, metrics dashboard
+  - `promotion/CONTACTS-CHECKLIST.md` — 30 target contacts across 7 regions, with status machine
+  - `promotion/POSTS-LOG.md` — publishing log + 30-day retrospective template
+  - `promotion/templates/HackerNews.md` — Show HN post + 5 comment responses
+  - `promotion/templates/V2EX.md` — 创造 node post + 5 responses
+  - `promotion/templates/DevTo.md` — long-form 1,800–2,500 word article
+  - `promotion/templates/Twitter.md` — 8-tweet thread + reply templates
+  - `promotion/templates/WeChat.md` — 朋友圈 / 群 / 即刻 / 微博 / 小红书
+  - `promotion/templates/Cold-Email-1-CSSA.md` — 校园学生组织
+  - `promotion/templates/Cold-Email-2-NGO.md` — 食物银行 / NGO
+  - `promotion/templates/Cold-Email-3-Church.md` — 教会 / 社区中心
+  - `promotion/templates/Cold-Email-4-Tech.md` — 技术志愿者
+
+### Changed
+- **Tailwind CSS rebuilt** to include arbitrary value `from-[#0a1814]` and `to-[#0a1410]` for the section gradient
+- `.gitignore` adds `_*.js`, `_*.py`, `_*.html`, `_*.sh` patterns to prevent test-script commits
+- `README.md` updated to mention `#ambassadors` section
+
+### Notes
+- All 6 empty ambassador slots are intentionally untracked — they will be filled manually as volunteers sign up
+- The `open@freefoodmap.org` mailbox routes to the org founders
+- This is the **call to action** for the public launch: turn viewers into participants
+- Promotion templates are MIT-licensed, so any future ambassador can copy, adapt, and improve them
+
+## [1.3.0] - 2026-08-07 · GitHub Pages launch
 
 The site now explicitly invites collaborators — engineers, local contacts, translators, story collectors, outreach folks, designers — to grow the network with the founder.
 
