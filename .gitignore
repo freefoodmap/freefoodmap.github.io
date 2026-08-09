@@ -12,6 +12,10 @@ __wrap-*.html
 __setlang.html
 en-prep.html
 .measure-*.png
+_*.js
+_*.py
+_*.html
+_*.sh
 
 # Local Chrome user-data dirs (used for headless screenshot verification)
 .chrome-*

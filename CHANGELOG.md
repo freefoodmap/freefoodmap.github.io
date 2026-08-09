@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-08-09 · The Network (#ambassadors section)
+
+The site now explicitly invites collaborators — engineers, local contacts, translators, story collectors, outreach folks, designers — to grow the network with the founder.
+
+### Added
+- **New `#ambassadors` section** between `#guide` and `#submit` — emerald-tinted dark theme for visual distinction
+  - **6 role cards** (engineer / local contact / translator / story collector / outreach / designer) with skills tags
+  - **Current network** list: 1 filled founder card (Andy Zhuang) + 5 empty dashed "your slot" placeholders with `← 你的位置` / `← YOUR SLOT` hint
+  - **3-step "How to join"** flow: open issue/PR or email → we reply within a week → co-build next version
+  - **CTAs**: GitHub issues (emerald button) + `mailto:open@freefoodmap.org`
+  - Closing quote: *"The world is changed not by one person, but by the network of people who choose to show up."*
+- **Nav link** `#ambassadors` (emerald hover, between "如何开始" and "提交新发放点")
+- **44 new i18n keys** in both `zh` and `en` (240 total in dict, 238 used in HTML)
+- **New CSS classes** in `style.css`: `.amb-card`, `.amb-person-filled`, `.amb-person-empty` (with `::after` slot hint), `.amb-step`, `.amb-step-num`
+
+### Changed
+- **Tailwind CSS rebuilt** to include arbitrary value `from-[#0a1814]` and `to-[#0a1410]` for the section gradient
+- `.gitignore` adds `_*.js`, `_*.py`, `_*.html`, `_*.sh` patterns to prevent test-script commits
+
+### Notes
+- All 6 empty slots are intentionally untracked — they will be filled manually as volunteers sign up
+- The `open@freefoodmap.org` mailbox routes to the org founders
+- This is the **call to action** for the public launch: turn viewers into participants
+
 ## [1.3.0] - 2026-08-07 · GitHub Pages launch
 
 The project is now publicly deployed and open-sourced.

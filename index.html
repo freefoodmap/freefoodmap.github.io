@@ -33,6 +33,7 @@
         <a href="#map" class="hover:text-crust transition" data-i18n="navMap">地图</a>
         <a href="#videos" class="hover:text-crust transition" data-i18n="navVideos">视频</a>
         <a href="#guide" class="hover:text-crust transition" data-i18n="navGuide">如何开始</a>
+        <a href="#ambassadors" class="hover:text-emerald-300 transition" data-i18n="navAmbassadors">大使 / 加入</a>
         <a href="#submit" class="px-3 py-1.5 rounded-full bg-crust/20 text-crust border border-crust/30 hover:bg-crust/30 transition" data-i18n="navSubmit">提交新发放点</a>
         <!-- Language switcher -->
         <button id="lang-toggle" class="ml-1 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/80 text-xs font-mono uppercase tracking-wider hover:bg-white/10 hover:text-white transition flex items-center gap-1.5" aria-label="Toggle language">
@@ -52,6 +53,7 @@
       <a href="#map" class="block hover:text-crust" data-i18n="navMap">地图</a>
       <a href="#videos" class="block hover:text-crust" data-i18n="navVideos">视频</a>
       <a href="#guide" class="block hover:text-crust" data-i18n="navGuide">如何开始</a>
+      <a href="#ambassadors" class="block hover:text-emerald-300" data-i18n="navAmbassadors">大使 / 加入</a>
       <a href="#submit" class="block text-crust" data-i18n="navSubmit">提交新发放点</a>
     </div>
   </nav>
@@ -486,6 +488,252 @@
       <div class="text-center mt-20">
         <div class="font-serif text-2xl sm:text-3xl max-w-2xl mx-auto leading-snug" data-i18n="ctaQuote">小唐一个人做不了所有的事。<br />但你,加上地图上几十个邻居,可以。</div>
         <a href="#submit" class="inline-flex items-center gap-2 mt-8 px-7 py-4 rounded-full bg-crust text-ink font-semibold hover:bg-crust/90 transition" data-i18n="ctaButton">我要加入 · 提交一个发放点 →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AMBASSADORS / THE NETWORK ============ -->
+  <section id="ambassadors" class="py-24 sm:py-32 bg-gradient-to-b from-[#0a1814] via-ink to-[#0a1410] text-white relative overflow-hidden">
+    <!-- subtle emerald aurora -->
+    <div class="absolute inset-0 opacity-25 pointer-events-none">
+      <div class="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-emerald-500/15 blur-3xl"></div>
+      <div class="absolute bottom-0 right-1/4 w-[420px] h-[420px] rounded-full bg-teal-400/10 blur-3xl"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mb-16">
+        <div class="inline-flex items-center gap-2 text-xs font-mono text-emerald-400 uppercase tracking-widest mb-3">
+          <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+          <span data-i18n="ambTag">#006 · THE NETWORK</span>
+        </div>
+        <h2 class="text-4xl sm:text-5xl font-bold tracking-tight leading-tight">
+          <span data-i18n="ambH2a">一个人走得快,</span><br />
+          <span class="text-emerald-300" data-i18n="ambH2b">一群人走得远。</span>
+        </h2>
+        <p class="text-lg text-white/70 mt-5 leading-relaxed" data-i18n="ambSub">不一定要会写代码。只要你愿意花一点时间——这个网络就可以扩得更大、更深、更远。下面 6 个角色,总有一款适合你。</p>
+      </div>
+
+      <!-- Role cards -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
+        <!-- Role 1: Engineer -->
+        <div class="amb-card group">
+          <div class="text-3xl mb-3">💻</div>
+          <div class="text-xs font-mono text-emerald-300/80 uppercase tracking-wider mb-1" data-i18n="ambR1T">Engineer / Developer</div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="ambR1H">工程师</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="ambR1D">前端、i18n、Leaflet、bot、CI 都欢迎。会写代码的,让站点活起来。</p>
+          <div class="mt-4 flex flex-wrap gap-1.5 text-[10px] font-mono text-white/40 uppercase tracking-wider">
+            <span class="px-2 py-0.5 rounded bg-white/5">GitHub</span>
+            <span class="px-2 py-0.5 rounded bg-white/5">Leaflet</span>
+            <span class="px-2 py-0.5 rounded bg-white/5">i18n</span>
+            <span class="px-2 py-0.5 rounded bg-white/5">Tailwind</span>
+          </div>
+        </div>
+
+        <!-- Role 2: Local Contact -->
+        <div class="amb-card group">
+          <div class="text-3xl mb-3">🌍</div>
+          <div class="text-xs font-mono text-emerald-300/80 uppercase tracking-wider mb-1" data-i18n="ambR2T">Local Contact</div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="ambR2H">本地联络人</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="ambR2D">你在哪座城市?帮我们核对当地的 food bank、食物柜、街头发放点信息,或者直接添加新点。</p>
+          <div class="mt-4 flex flex-wrap gap-1.5 text-[10px] font-mono text-white/40 uppercase tracking-wider">
+            <span class="px-2 py-0.5 rounded bg-white/5" data-i18n="ambR2S1">31 国 → 100+</span>
+            <span class="px-2 py-0.5 rounded bg-white/5" data-i18n="ambR2S2">街道 / 食物银行</span>
+          </div>
+        </div>
+
+        <!-- Role 3: Translator -->
+        <div class="amb-card group">
+          <div class="text-3xl mb-3">🗣</div>
+          <div class="text-xs font-mono text-emerald-300/80 uppercase tracking-wider mb-1" data-i18n="ambR3T">Translator</div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="ambR3H">翻译</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="ambR3D">目前中/英,需要 西班牙 / 葡萄牙 / 法 / 阿拉伯 / 印地 / 斯瓦希里 等。一个国家一份力量。</p>
+          <div class="mt-4 flex flex-wrap gap-1.5 text-[10px] font-mono text-white/40 uppercase tracking-wider">
+            <span class="px-2 py-0.5 rounded bg-white/5" data-i18n="ambR3S1">你的母语 + EN</span>
+            <span class="px-2 py-0.5 rounded bg-white/5" data-i18n="ambR3S2">JSON 字典格式</span>
+          </div>
+        </div>
+
+        <!-- Role 4: Story Collector -->
+        <div class="amb-card group">
+          <div class="text-3xl mb-3">📹</div>
+          <div class="text-xs font-mono text-emerald-300/80 uppercase tracking-wider mb-1" data-i18n="ambR4T">Story Collector</div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="ambR4H">影像记录</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="ambR4D">拍下你身边的免费食品发放点,或记录你正在做的过程。视频是这张地图的血液。</p>
+          <div class="mt-4 flex flex-wrap gap-1.5 text-[10px] font-mono text-white/40 uppercase tracking-wider">
+            <span class="px-2 py-0.5 rounded bg-white/5" data-i18n="ambR4S1">60s 短视频</span>
+            <span class="px-2 py-0.5 rounded bg-white/5" data-i18n="ambR4S2">BV / YT / TT 链接</span>
+          </div>
+        </div>
+
+        <!-- Role 5: Outreach -->
+        <div class="amb-card group">
+          <div class="text-3xl mb-3">🤝</div>
+          <div class="text-xs font-mono text-emerald-300/80 uppercase tracking-wider mb-1" data-i18n="ambR5T">Outreach</div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="ambR5H">外联 / 桥梁</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="ambR5D">CSSA、church、community center、NGO 联络人。帮我们把这件事介绍到本地,落地生根。</p>
+          <div class="mt-4 flex flex-wrap gap-1.5 text-[10px] font-mono text-white/40 uppercase tracking-wider">
+            <span class="px-2 py-0.5 rounded bg-white/5" data-i18n="ambR5S1">校园 / 社区</span>
+            <span class="px-2 py-0.5 rounded bg-white/5" data-i18n="ambR5S2">宗教 / 公益组织</span>
+          </div>
+        </div>
+
+        <!-- Role 6: Designer -->
+        <div class="amb-card group">
+          <div class="text-3xl mb-3">🎨</div>
+          <div class="text-xs font-mono text-emerald-300/80 uppercase tracking-wider mb-1" data-i18n="ambR6T">Designer</div>
+          <h3 class="text-xl font-bold mb-2" data-i18n="ambR6H">设计师</h3>
+          <p class="text-white/60 text-sm leading-relaxed" data-i18n="ambR6D">海报、icon、插画、动效、视频片头、字体。让这个网络看起来也像它该有的样子。</p>
+          <div class="mt-4 flex flex-wrap gap-1.5 text-[10px] font-mono text-white/40 uppercase tracking-wider">
+            <span class="px-2 py-0.5 rounded bg-white/5">Figma</span>
+            <span class="px-2 py-0.5 rounded bg-white/5">Illustrator</span>
+            <span class="px-2 py-0.5 rounded bg-white/5">After Effects</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Network -->
+      <div class="mb-20">
+        <div class="flex items-end justify-between flex-wrap gap-4 mb-8">
+          <div>
+            <div class="text-xs font-mono text-emerald-300/80 uppercase tracking-widest mb-2" data-i18n="ambListTag">#006.A · WHO'S HERE NOW</div>
+            <h3 class="text-2xl sm:text-3xl font-bold" data-i18n="ambListH">已在网络里的人</h3>
+          </div>
+          <div class="text-xs font-mono text-white/40" data-i18n="ambListCount">1 founder · 0 volunteers · 0 cities covered</div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Founder card (filled) -->
+          <div class="amb-person amb-person-filled">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-ink font-bold text-lg flex-shrink-0">A</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-bold" data-i18n="ambF1N">Andy Zhuang</span>
+                  <span class="text-[10px] font-mono text-emerald-300 px-1.5 py-0.5 rounded bg-emerald-300/10 border border-emerald-300/20" data-i18n="ambF1Badge">FOUNDER</span>
+                </div>
+                <div class="text-sm text-white/60 mt-0.5" data-i18n="ambF1R">发起人 / Project Lead</div>
+                <div class="text-xs text-white/40 mt-2 flex items-center gap-1.5">
+                  <span>📍</span><span data-i18n="ambF1L">NYC / 全球远程</span>
+                </div>
+                <div class="text-xs text-white/40 mt-1">
+                  <span data-i18n="ambF1C">统筹 · 代码 · i18n</span>
+                </div>
+                <div class="text-xs text-emerald-300/80 mt-2 font-mono" data-i18n="ambF1K">via GitHub @AndyZhuang</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5 empty slot cards -->
+          <div class="amb-person amb-person-empty">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center text-white/30 font-bold text-lg flex-shrink-0">?</div>
+              <div class="flex-1 min-w-0">
+                <div class="font-bold text-white/40" data-i18n="ambS1N">YOUR NAME</div>
+                <div class="text-sm text-white/40 mt-0.5" data-i18n="ambS1R">本地联络人 · 你的城市</div>
+                <div class="text-xs text-white/30 mt-2" data-i18n="ambS1L">📍 目标:覆盖 100+ 国家</div>
+                <div class="text-xs text-white/30 mt-1" data-i18n="ambS1C">核对当地 food bank、添加新点</div>
+                <div class="text-xs text-emerald-300/40 mt-2 font-mono" data-i18n="ambS1K">open@freefoodmap.org</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="amb-person amb-person-empty">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center text-white/30 font-bold text-lg flex-shrink-0">?</div>
+              <div class="flex-1 min-w-0">
+                <div class="font-bold text-white/40" data-i18n="ambS2N">YOUR NAME</div>
+                <div class="text-sm text-white/40 mt-0.5" data-i18n="ambS2R">翻译 · 你的母语</div>
+                <div class="text-xs text-white/30 mt-2" data-i18n="ambS2L">📍 中/英 → +1 种语言</div>
+                <div class="text-xs text-white/30 mt-1" data-i18n="ambS2C">把 180 个 key 翻译到你的母语</div>
+                <div class="text-xs text-emerald-300/40 mt-2 font-mono" data-i18n="ambS2K">GitHub PR welcome</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="amb-person amb-person-empty">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center text-white/30 font-bold text-lg flex-shrink-0">?</div>
+              <div class="flex-1 min-w-0">
+                <div class="font-bold text-white/40" data-i18n="ambS3N">YOUR NAME</div>
+                <div class="text-sm text-white/40 mt-0.5" data-i18n="ambS3R">影像记录 · 你的城市</div>
+                <div class="text-xs text-white/30 mt-2" data-i18n="ambS3L">📍 街头 / food bank / 派发现场</div>
+                <div class="text-xs text-white/30 mt-1" data-i18n="ambS3C">60s 短视频 → 视频区</div>
+                <div class="text-xs text-emerald-300/40 mt-2 font-mono" data-i18n="ambS3K">提交视频链接</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="amb-person amb-person-empty">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center text-white/30 font-bold text-lg flex-shrink-0">?</div>
+              <div class="flex-1 min-w-0">
+                <div class="font-bold text-white/40" data-i18n="ambS4N">YOUR NAME</div>
+                <div class="text-sm text-white/40 mt-0.5" data-i18n="ambS4R">外联 · 你的校园/社区</div>
+                <div class="text-xs text-white/30 mt-2" data-i18n="ambS4L">📍 CSSA / 教会 / 公益组织</div>
+                <div class="text-xs text-white/30 mt-1" data-i18n="ambS4C">把项目介绍给本地的 5 个人</div>
+                <div class="text-xs text-emerald-300/40 mt-2 font-mono" data-i18n="ambS4K">open@freefoodmap.org</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="amb-person amb-person-empty">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center text-white/30 font-bold text-lg flex-shrink-0">?</div>
+              <div class="flex-1 min-w-0">
+                <div class="font-bold text-white/40" data-i18n="ambS5N">YOUR NAME</div>
+                <div class="text-sm text-white/40 mt-0.5" data-i18n="ambS5R">工程师 / 设计师</div>
+                <div class="text-xs text-white/30 mt-2" data-i18n="ambS5L">📍 远程 · 时区不限</div>
+                <div class="text-xs text-white/30 mt-1" data-i18n="ambS5C">代码 / 海报 / icon / 动效</div>
+                <div class="text-xs text-emerald-300/40 mt-2 font-mono" data-i18n="ambS5K">GitHub PR welcome</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How to join -->
+      <div class="grid lg:grid-cols-12 gap-10 items-start">
+        <div class="lg:col-span-5">
+          <div class="text-xs font-mono text-emerald-300/80 uppercase tracking-widest mb-2" data-i18n="ambJoinTag">#006.B · HOW TO JOIN</div>
+          <h3 class="text-2xl sm:text-3xl font-bold mb-3" data-i18n="ambJoinH">如何加入</h3>
+          <p class="text-white/60 leading-relaxed" data-i18n="ambJoinP">不需要签合同、不需要交钱、不需要开会。GitHub 一个 PR,或一封邮件,就可以开始。</p>
+        </div>
+        <div class="lg:col-span-7 space-y-4">
+          <div class="amb-step">
+            <div class="amb-step-num">01</div>
+            <div class="flex-1">
+              <div class="font-bold mb-1" data-i18n="ambJoin1H">告诉我们你能做什么</div>
+              <p class="text-white/60 text-sm leading-relaxed" data-i18n="ambJoin1D">在 GitHub 开 issue / PR(代码或翻译),或直接邮件 <span class="font-mono text-emerald-300">open@freefoodmap.org</span>。说清楚:技能、时间、城市、联系方式。</p>
+            </div>
+          </div>
+          <div class="amb-step">
+            <div class="amb-step-num">02</div>
+            <div class="flex-1">
+              <div class="font-bold mb-1" data-i18n="ambJoin2H">一周内回复,加你到协作者列表</div>
+              <p class="text-white/60 text-sm leading-relaxed" data-i18n="ambJoin2D">你的名字会出现在 GitHub README 和站点的 <code class="font-mono text-emerald-300">#ambassadors</code> 区,所有 commit 都会保留你的署名。</p>
+            </div>
+          </div>
+          <div class="amb-step">
+            <div class="amb-step-num">03</div>
+            <div class="flex-1">
+              <div class="font-bold mb-1" data-i18n="ambJoin3H">共建下一版,让网络长得更大</div>
+              <p class="text-white/60 text-sm leading-relaxed" data-i18n="ambJoin3D">路线图在 GitHub Issues,我们一起决定下一站:加语言、加国家、加功能。所有人都是 committer,所有人都是 owner。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTAs -->
+      <div class="text-center mt-16 pt-10 border-t border-white/10">
+        <div class="font-serif text-xl sm:text-2xl text-white/80 max-w-2xl mx-auto leading-snug mb-7" data-i18n="ambCTAQuote">"The world is changed not by one person, but by the network of people who choose to show up."</div>
+        <div class="flex flex-wrap justify-center gap-3">
+          <a href="https://github.com/freefoodmap/freefoodmap.github.io/issues" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-emerald-400 text-ink font-semibold hover:bg-emerald-300 transition">
+            <span data-i18n="ambCTAGit">GitHub · 提个 issue / PR →</span>
+          </a>
+          <a href="mailto:open@freefoodmap.org" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/5 border border-white/15 text-white hover:bg-white/10 transition">
+            <span data-i18n="ambCTAMail">✉ 邮件 · open@freefoodmap.org</span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
