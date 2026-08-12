@@ -209,33 +209,6 @@
     });
   }
 
-  function popupHTML(p) {
-    const labelsByLang = (TYPE_LABELS && (TYPE_LABELS[currentLang] || TYPE_LABELS.zh)) || {};
-    const label = labelsByLang[p.type] || p.type;
-    // desc: prefer desc_en if current lang is en and desc_en exists
-    const desc = currentLang === 'en' && p.desc_en ? p.desc_en : p.desc;
-    const website = p.website
-      ? `<div>🔗 <a href="${p.website}" target="_blank" rel="noopener">${t('popupWebsite').replace('🔗 ', '')}</a></div>`
-      : '';
-    const phone = p.phone
-      ? `<div>📞 ${p.phone}</div>`
-      : '';
-    return `
-      <div class="popup-inner">
-        <div class="popup-type">${label}</div>
-        <div class="popup-name">${p.name}</div>
-        <div class="popup-city">${p.city} · ${p.country}</div>
-        <div class="popup-desc">${desc}</div>
-        <div class="popup-meta">
-          <div>${t('popupSchedule')} ${p.schedule}</div>
-          ${phone}
-          ${website}
-        </div>
-        ${p.website ? `<a class="popup-cta" href="${p.website}" target="_blank" rel="noopener">${t('popupViewWebsite')}</a>` : ''}
-      </div>
-    `;
-  }
-
   function initMap() {
     const el = $('#map-canvas');
     if (!el || typeof L === 'undefined') return;
@@ -260,75 +233,6 @@
 
     leafletMap.whenReady(() => {
       buildMapList();
-    });
-  }
-
-  function renderMarkers() {
-    if (!markerLayer) return;
-    markerLayer.clearLayers();
-
-    const visible = activeType === 'all'
-      ? POINTS
-      : POINTS.filter(p => p.type === activeType);
-
-    visible.forEach(p => {
-      const isStory = p.id === 'us-la-sauce-pancake-tang';
-      const icon = makeIcon(p.type, isStory);
-      const m = L.marker([p.lat, p.lng], { icon, title: p.name });
-      m.bindPopup(popupHTML(p), { maxWidth: 320 });
-      m.addTo(markerLayer);
-    });
-
-    buildMapList();
-  }
-
-  function buildMapList() {
-    const listEl = $('#map-list');
-    if (!listEl) return;
-    const visible = activeType === 'all'
-      ? POINTS
-      : POINTS.filter(p => p.type === activeType);
-
-    const grouped = {};
-    visible.forEach(p => {
-      const k = p.country || '其他';
-      (grouped[k] = grouped[k] || []).push(p);
-    });
-
-    const order = Object.keys(grouped).sort();
-
-    let html = '<div class="text-xs text-white/40 font-mono uppercase tracking-wider">' + t('mapListTitle') + '</div>';
-    html += '<div class="text-xs text-white/30 mt-1">' + tF('mapListTotal', { n: visible.length }) + '</div>';
-    order.forEach(country => {
-      html += '<div class="mt-4 text-xs font-mono text-crust uppercase tracking-wider">' + country + '</div>';
-      grouped[country]
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .forEach(p => {
-          html += '<div class="map-list-item mt-2" data-id="' + p.id + '">'
-                + '<div class="map-list-name">' + p.name + '</div>'
-                + '<div class="map-list-city">' + p.city + '</div>'
-                + '</div>';
-        });
-    });
-
-    listEl.innerHTML = html;
-
-    $$('.map-list-item', listEl).forEach(el => {
-      el.addEventListener('click', () => {
-        const id = el.getAttribute('data-id');
-        const p = POINTS.find(x => x.id === id);
-        if (!p || !leafletMap) return;
-        $$('.map-list-item').forEach(x => x.classList.remove('active'));
-        el.classList.add('active');
-        leafletMap.flyTo([p.lat, p.lng], 12, { duration: 1.0 });
-        setTimeout(() => {
-          leafletMap.eachLayer(layer => {
-            if (layer._latlng && Math.abs(layer._latlng.lat - p.lat) < 0.0001 && Math.abs(layer._latlng.lng - p.lng) < 0.0001) {
-              layer.openPopup();
-            }
-          });
-        }, 1100);
-      });
     });
   }
 
@@ -368,6 +272,259 @@
     });
   }
 
+  // ------- geolocation: "find food near me" -------
+  let userLocation = null; // { lat, lng } once granted
+
+  function haversineKm(a, b) {
+    const R = 6371; // Earth radius in km
+    const toRad = (d) => d * Math.PI / 180;
+    const dLat = toRad(b.lat - a.lat);
+    const dLng = toRad(b.lng - a.lng);
+    const lat1 = toRad(a.lat);
+    const lat2 = toRad(b.lat);
+    const x = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(x)));
+  }
+
+  function distanceLabel(km) {
+    if (km < 1) return tF('mAway', { n: Math.round(km * 1000) });
+    if (km < 10) return tF('kmAway', { n: km.toFixed(1) });
+    if (km < 1000) return tF('kmAway', { n: Math.round(km) });
+    return tF('kmAway', { n: Math.round(km / 100) * 100 });
+  }
+
+  function sortedPoints() {
+    const visible = activeType === 'all'
+      ? POINTS
+      : POINTS.filter(p => p.type === activeType);
+    if (!userLocation) return visible;
+    return visible
+      .map(p => ({ p, d: haversineKm(userLocation, { lat: p.lat, lng: p.lng }) }))
+      .sort((a, b) => a.d - b.d)
+      .map(x => x.p);
+  }
+
+  function popupHTML(p) {
+    const labelsByLang = (TYPE_LABELS && (TYPE_LABELS[currentLang] || TYPE_LABELS.zh)) || {};
+    const label = labelsByLang[p.type] || p.type;
+    const desc = currentLang === 'en' && p.desc_en ? p.desc_en : p.desc;
+    const website = p.website
+      ? `<div>🔗 <a href="${p.website}" target="_blank" rel="noopener">${t('popupWebsite').replace('🔗 ', '')}</a></div>`
+      : '';
+    const phone = p.phone
+      ? `<div>📞 ${p.phone}</div>`
+      : '';
+    // Distance line if user location is set
+    let dist = '';
+    if (userLocation) {
+      const km = haversineKm(userLocation, { lat: p.lat, lng: p.lng });
+      dist = `<div class="popup-distance">📏 ${distanceLabel(km)}</div>`;
+    }
+    return `
+      <div class="popup-inner">
+        <div class="popup-type">${label}</div>
+        <div class="popup-name">${p.name}</div>
+        <div class="popup-city">${p.city} · ${p.country}</div>
+        <div class="popup-desc">${desc}</div>
+        <div class="popup-meta">
+          <div>${t('popupSchedule')} ${p.schedule}</div>
+          ${phone}
+          ${website}
+          ${dist}
+        </div>
+        ${p.website ? `<a class="popup-cta" href="${p.website}" target="_blank" rel="noopener">${t('popupViewWebsite')}</a>` : ''}
+      </div>
+    `;
+  }
+
+  function renderMarkers() {
+    if (!markerLayer) return;
+    markerLayer.clearLayers();
+
+    const sorted = sortedPoints();
+    sorted.forEach(p => {
+      const isStory = p.id === 'us-la-sauce-pancake-tang';
+      const icon = makeIcon(p.type, isStory);
+      const m = L.marker([p.lat, p.lng], { icon, title: p.name });
+      m.bindPopup(popupHTML(p), { maxWidth: 320 });
+      m.addTo(markerLayer);
+    });
+
+    buildMapList();
+  }
+
+  function buildMapList() {
+    const listEl = $('#map-list');
+    if (!listEl) return;
+    const sorted = sortedPoints();
+
+    const grouped = {};
+    sorted.forEach(p => {
+      const k = p.country || '其他';
+      (grouped[k] = grouped[k] || []).push(p);
+    });
+
+    const order = Object.keys(grouped).sort();
+
+    let html = '<div class="text-xs text-white/40 font-mono uppercase tracking-wider">' + t('mapListTitle') + '</div>';
+    html += '<div class="text-xs text-white/30 mt-1">' + tF('mapListTotal', { n: sorted.length }) + '</div>';
+    if (userLocation) {
+      html += '<div class="text-xs text-emerald-300 mt-1">📍 ' + t('geoSuccess') + '</div>';
+    }
+    order.forEach(country => {
+      html += '<div class="mt-4 text-xs font-mono text-crust uppercase tracking-wider">' + country + '</div>';
+      grouped[country].forEach(p => {
+        const dist = userLocation
+          ? '<span class="text-emerald-300"> · ' + distanceLabel(haversineKm(userLocation, { lat: p.lat, lng: p.lng })) + '</span>'
+          : '';
+        html += '<div class="map-list-item mt-2" data-id="' + p.id + '">'
+              + '<div class="map-list-name">' + p.name + '</div>'
+              + '<div class="map-list-city">' + p.city + dist + '</div>'
+              + '</div>';
+      });
+    });
+
+    listEl.innerHTML = html;
+
+    $$('.map-list-item', listEl).forEach(el => {
+      el.addEventListener('click', () => {
+        const id = el.getAttribute('data-id');
+        const p = POINTS.find(x => x.id === id);
+        if (!p || !leafletMap) return;
+        $$('.map-list-item').forEach(x => x.classList.remove('active'));
+        el.classList.add('active');
+        leafletMap.flyTo([p.lat, p.lng], 12, { duration: 1.0 });
+        setTimeout(() => {
+          leafletMap.eachLayer(layer => {
+            if (layer._latlng && Math.abs(layer._latlng.lat - p.lat) < 0.0001 && Math.abs(layer._latlng.lng - p.lng) < 0.0001) {
+              layer.openPopup();
+            }
+          });
+        }, 1100);
+      });
+    });
+  }
+
+  function setupGeolocation() {
+    const btn = $('#geo-locate');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      if (userLocation) {
+        // Already located: reset
+        userLocation = null;
+        const status = $('#geo-status');
+        if (status) { status.textContent = t('geoHint'); status.classList.remove('text-emerald-300'); status.classList.add('text-white/50'); }
+        btn.innerHTML = '<span class="text-base">📍</span><span>' + t('geoFind') + '</span>';
+        if (leafletMap) leafletMap.flyTo([25, 0], 2, { duration: 1.0 });
+        renderMarkers();
+        return;
+      }
+      if (!('geolocation' in navigator)) {
+        showGeoError('unavailable');
+        return;
+      }
+      btn.disabled = true;
+      const status = $('#geo-status');
+      if (status) status.textContent = t('geoLocating');
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          btn.disabled = false;
+          btn.innerHTML = '<span class="text-base">✓</span><span>' + t('geoReset') + '</span>';
+          if (status) { status.textContent = t('geoSuccess'); status.classList.remove('text-white/50'); status.classList.add('text-emerald-300'); }
+          if (leafletMap) leafletMap.flyTo([userLocation.lat, userLocation.lng], 9, { duration: 1.5 });
+          renderMarkers();
+        },
+        (err) => {
+          btn.disabled = false;
+          if (status) status.textContent = t('geoHint');
+          showGeoError(err.code === 1 ? 'denied' : err.code === 2 ? 'unavailable' : err.code === 3 ? 'timeout' : 'generic');
+        },
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+      );
+    });
+  }
+
+  function showGeoError(kind) {
+    const key = 'geoFail' + kind.charAt(0).toUpperCase() + kind.slice(1);
+    const msg = t(key);
+    const status = $('#geo-status');
+    if (status) {
+      status.textContent = msg;
+      status.classList.remove('text-white/50', 'text-emerald-300');
+      status.classList.add('text-ember');
+      setTimeout(() => {
+        status.textContent = t('geoHint');
+        status.classList.remove('text-ember');
+        status.classList.add('text-white/50');
+      }, 6000);
+    }
+  }
+
+  // ------- PWA: service worker + install hint -------
+  function setupPWA() {
+    // 1) Register service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then((reg) => {
+          // Listen for new SW waiting
+          reg.addEventListener('updatefound', () => {
+            const newSw = reg.installing;
+            if (!newSw) return;
+            newSw.addEventListener('statechange', () => {
+              if (newSw.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateBanner();
+              }
+            });
+          });
+        }).catch((err) => console.warn('[pwa] SW registration failed', err));
+      });
+
+      // Listen for messages from SW (update notification)
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'SW_UPDATED') {
+          showUpdateBanner();
+        }
+      });
+    }
+
+    // 2) iOS install hint (no native prompt on iOS)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+    const dismissed = localStorage.getItem('pwa-install-dismissed') === '1';
+    if (isIOS && !isStandalone && !dismissed) {
+      setTimeout(() => {
+        const hint = $('#pwa-install-hint');
+        if (hint) hint.classList.remove('hidden');
+      }, 8000); // show after 8s, not on first paint
+    }
+    const dismissBtn = $('#pwa-install-dismiss');
+    if (dismissBtn) {
+      dismissBtn.addEventListener('click', () => {
+        const hint = $('#pwa-install-hint');
+        if (hint) hint.classList.add('hidden');
+        localStorage.setItem('pwa-install-dismissed', '1');
+      });
+    }
+  }
+
+  function showUpdateBanner() {
+    const banner = $('#pwa-update-hint');
+    if (!banner) return;
+    banner.classList.remove('hidden');
+    const btn = $('#pwa-update-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        // Tell SW to skip waiting, then reload
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        }
+        location.reload();
+      }, { once: true });
+    }
+  }
+
   // ------- init -------
   document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.classList.add('js');
@@ -377,6 +534,8 @@
     setupStats();
     setupFilters();
     setupForm();
+    setupGeolocation();
+    setupPWA();
     initMap();
     // Apply i18n last so dynamic UI (map list) gets correct text
     applyI18n();

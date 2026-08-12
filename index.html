@@ -2,10 +2,23 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Free Food Map · 全球免费食品发放点 · 一张饼开始的善意</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#fdf8f0" media="(prefers-color-scheme: light)" />
   <meta name="description" content="一张地图,串起全球 60+ 个免费食品发放点。灵感来自在洛杉矶为流浪汉免费做酱香饼的河南小伙'小唐'。这里有故事、视频,也有如何开始做免费食品发放的完整指南。" />
-  <meta name="theme-color" content="#0f172a" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Free Food" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="Free Food" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <title>Free Food Map · 全球免费食品发放点 · 一张饼开始的善意</title>
 
   <!-- Fonts & UI -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,7 +30,6 @@
   <link rel="stylesheet" href="tailwind.css" />
 
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23f4a52a'/%3E%3Ccircle cx='32' cy='32' r='20' fill='%23e84c1c'/%3E%3C/svg%3E" />
 </head>
 <body class="bg-cream text-ink font-sans antialiased">
 
@@ -247,6 +259,15 @@
         <button class="map-filter chip" data-type="smart_cabinet" data-i18n="mapFilterSmart">智能食物柜</button>
         <button class="map-filter chip" data-type="school_meal" data-i18n="mapFilterSchool">校园供餐</button>
         <button class="map-filter chip" data-type="drive_thru" data-i18n="mapFilterDrive">Drive-Through</button>
+      </div>
+
+      <!-- Geolocate row -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+        <button id="geo-locate" class="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/15 text-white hover:bg-white/10 hover:border-crust/50 transition text-sm">
+          <span class="text-base">📍</span>
+          <span data-i18n="geoFind">找附近的免费食物</span>
+        </button>
+        <div id="geo-status" class="text-xs text-white/50 font-mono hidden sm:block" data-i18n="geoHint">用浏览器定位 · 距离最近优先</div>
       </div>
 
       <div class="grid lg:grid-cols-12 gap-6">
@@ -835,5 +856,29 @@
   <script src="data.js"></script>
   <script src="i18n.js"></script>
   <script src="app.js"></script>
+
+  <!-- PWA: install prompt (iOS hint) -->
+  <div id="pwa-install-hint" class="hidden fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-sm z-40 bg-ink/95 backdrop-blur border border-white/15 rounded-2xl p-4 shadow-2xl text-white text-sm">
+    <div class="flex items-start gap-3">
+      <span class="text-2xl flex-shrink-0">📱</span>
+      <div class="flex-1 min-w-0">
+        <div class="font-bold mb-1" data-i18n="pwaInstallTitle">加到主屏幕,像 App 一样用</div>
+        <p class="text-white/70 text-xs leading-relaxed" data-i18n="pwaInstallBody">点分享按钮 · "添加到主屏幕"。下次直接从桌面打开,离线也能查。</p>
+      </div>
+      <button id="pwa-install-dismiss" class="text-white/40 hover:text-white text-lg leading-none flex-shrink-0" aria-label="Dismiss">×</button>
+    </div>
+  </div>
+
+  <!-- PWA: update available banner -->
+  <div id="pwa-update-hint" class="hidden fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-sm z-40 bg-emerald-500 text-ink rounded-2xl p-4 shadow-2xl text-sm font-medium">
+    <div class="flex items-start gap-3">
+      <span class="text-xl flex-shrink-0">✨</span>
+      <div class="flex-1 min-w-0">
+        <div class="font-bold mb-1" data-i18n="pwaUpdateTitle">新版本可用</div>
+        <p class="text-ink/80 text-xs" data-i18n="pwaUpdateBody">刷新一下获得最新地图和新发放点。</p>
+      </div>
+      <button id="pwa-update-btn" class="ml-2 px-3 py-1.5 rounded-full bg-ink text-white text-xs font-bold hover:bg-ink/80 flex-shrink-0" data-i18n="pwaUpdateAction">刷新</button>
+    </div>
+  </div>
 </body>
 </html>

@@ -13,6 +13,8 @@
 - **6 步起步指南** —— 从"想清楚为什么"到"做 3 次再谈扩张"
 - **4 个前辈踩坑提醒** —— 被举报、消耗、钱、NGO 注册
 - **#ambassadors 大使网络** —— 6 种角色(工程师 / 本地联络人 / 翻译 / 影像记录 / 外联 / 设计师),founder + 5 个开放 slot
+- **PWA + 离线可用** —— 可装到主屏幕(像 App 一样),Service Worker 缓存 17 个核心资源,断网也能查
+- **找附近的免费食物** —— 一键浏览器定位,按距离排序,每个点显示 `X 公里外` / `X km away`
 - **可交互地图** —— Leaflet + OpenStreetMap,8 种类型筛选器,按国家分组的侧边列表
 - **提交表单** —— 提交新发放点(目前存到 localStorage,待接入后端)
 - **中英双语** —— 一键切换,持久化到 localStorage,支持 `?lang=en` URL 参数
@@ -31,10 +33,13 @@
 ```
 freefood/
 ├── index.html           # 主页面(9 个 section,所有 UI 文本带 data-i18n)
-├── style.css            # 自定义样式(品牌色 / 弹窗 / 地图标记 / reveal / 大使卡)
-├── app.js               # 交互逻辑:地图、筛选、滚动、表单、i18n
+├── style.css            # 自定义样式(品牌色 / 弹窗 / 地图标记 / reveal / 大使卡 / PWA banner)
+├── app.js               # 交互逻辑:地图、筛选、滚动、表单、i18n、定位、PWA
 ├── data.js              # 46 个全球发放点 + TYPE_LABELS / TYPE_COLORS
-├── i18n.js              # 中英翻译字典(240 keys × 2)
+├── i18n.js              # 中英翻译字典(278 keys × 2)
+├── manifest.json        # PWA manifest(2 个 shortcut、maskable icons)
+├── sw.js                # Service Worker(stale-while-revalidate + offline cache)
+├── icons/               # PWA 图标(192/512 + maskable + apple-touch 180 + favicon 32)
 ├── tailwind.config.js   # 主题色 / 字体 / 自定义动画
 ├── tailwind.src.css     # Tailwind 入口(@tailwind base/components/utilities)
 ├── tailwind.css         # 本地预构建产物(~20KB,无 CDN!)

@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] 2026-08-13 · PWA + "Find food near me"
+
+The site is now a Progressive Web App — installable to home screen, works offline, and locates the nearest free food distribution point to the user.
+
+### Added
+- **Web App Manifest** (`manifest.json`) — name, icons (192/512 + maskable variants), theme color `#0b1220`, start_url, **2 shortcuts** (Find nearby, How to start), display: standalone
+- **PWA icons** (`icons/`) — 6 PNGs total: `icon-192.png`, `icon-512.png`, `icon-maskable-192.png`, `icon-maskable-512.png`, `apple-touch-icon.png` (180x180), `favicon-32.png` — all 2-circle brand logo, total ~12KB
+- **Service Worker** (`sw.js`) — stale-while-revalidate for HTML, cache-first for static assets, versioned cache name (`freefood-v1.5.0`) for clean upgrades, skips third-party embeds (B 站, YouTube, fonts, Carto tiles)
+- **"Find food near me" button** in `#map` — uses `navigator.geolocation.getCurrentPosition`, computes haversine distance, sorts points by proximity, shows `X 公里外` / `X m away` on every marker popup and in the side list
+- **PWA install hint** — dismissible bottom-right banner shown on iOS Safari (which has no native install prompt) after 8s; dismissed state persisted in localStorage
+- **PWA update banner** — bottom-right emerald banner when a new SW is waiting; clicking "刷新" sends `SKIP_WAITING` to SW and reloads
+- **iOS safe-area support** — `padding-top: env(safe-area-inset-top)` on fixed nav, `bottom: calc(1rem + env(safe-area-inset-bottom))` on banners; respects notch / home indicator
+- **17 new i18n keys** (zh + en) — `geoFind`, `geoHint`, `geoLocating`, `geoSuccess`, `geoFailDenied`, `geoFailUnavailable`, `geoFailTimeout`, `geoFailGeneric`, `geoReset`, `geoSortReset`, `kmAway`, `mAway`, `pwaInstallTitle`, `pwaInstallBody`, `pwaUpdateTitle`, `pwaUpdateBody`, `pwaUpdateAction` (278 total in dict, all aligned)
+
+### Changed
+- `index.html` head section: removed inline SVG favicon, added `manifest.json` link, `apple-touch-icon`, theme-color (dark + light media queries), apple-mobile-web-app-* meta tags, mobile-web-app-capable, format-detection
+- `app.js` — new `haversineKm()`, `distanceLabel()`, `sortedPoints()` helpers; `popupHTML` adds distance line when location is set; `buildMapList` shows distance next to city; `setupGeolocation()` wires the button; `setupPWA()` registers SW + install hint; both run before `applyI18n`
+- `style.css` — `#geo-locate` states (disabled/hover/located), `.popup-distance` line, slide-up animation for banners, iOS safe-area rules
+
+### Notes
+- 240 keys → 261 keys → **278 keys** (i18n growth: +17 this release, +17 last release for ambassadors)
+- Site weight still **<60KB** for HTML+CSS+JS+manifest (PWA + i18n adds 0.5KB to total)
+- PWA install rate depends on browser:
+  - Android Chrome: shows native install banner automatically
+  - Desktop Chrome: shows install icon in URL bar
+  - iOS Safari: uses our custom bottom-right hint
+- **公益场景的关键能力**: 站点可以被"装"到主屏幕,离线可查(数据已缓存)。当手机没网或流量紧张时,用户依然能找到最近的食物点。
+
 ## [1.4.0] - 2026-08-10 · The Network + Promotion Playbook
 
 Two additions to convert viewers into participants.

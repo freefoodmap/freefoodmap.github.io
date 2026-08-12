@@ -96,6 +96,27 @@ window.I18N = {
     mapListTotal: '全部 · {n} 个点',
     mapNote: '* 数据由志愿者整理,具体服务时间以各机构最新公布为准。若信息有误,<a href="#submit" class="text-crust underline">点此提交更正</a>。',
 
+    // Geolocation
+    geoFind: '找附近的免费食物',
+    geoHint: '用浏览器定位 · 距离最近优先',
+    geoLocating: '定位中…',
+    geoSuccess: '已定位 · 按距离排序',
+    geoFailDenied: '你拒绝了定位权限。可以直接点地图上的点,或手动浏览。',
+    geoFailUnavailable: '你的浏览器不支持定位。可以直接点地图上的点,或手动浏览。',
+    geoFailTimeout: '定位超时了。再试一次,或直接点地图上的点。',
+    geoFailGeneric: '定位失败。可以直接点地图上的点,或手动浏览。',
+    geoReset: '↺ 重置',
+    geoSortReset: '重置排序',
+    kmAway: '{n} 公里外',
+    mAway: '{n} 米外',
+
+    // PWA install / update
+    pwaInstallTitle: '📱 加到主屏幕,像 App 一样用',
+    pwaInstallBody: 'iOS 用户:点底部分享按钮 → "添加到主屏幕"。下次直接从桌面打开,离线也能查。',
+    pwaUpdateTitle: '✨ 新版本可用',
+    pwaUpdateBody: '刷新一下获得最新地图和新发放点。',
+    pwaUpdateAction: '刷新',
+
     // Videos
     videosTag: '#003 · SEE IT HAPPEN',
     videosH2a: '这些场景,<span class="text-ember">正在发生</span>。',
@@ -378,6 +399,27 @@ window.I18N = {
     mapListTitle: 'Recently viewed',
     mapListTotal: 'All · {n} points',
     mapNote: '* Data curated by volunteers. Hours may vary — check the source. Spot an error? <a href="#submit" class="text-crust underline">Submit a correction</a>.',
+
+    // Geolocation
+    geoFind: 'Find food near me',
+    geoHint: 'Browser geolocation · nearest first',
+    geoLocating: 'Locating…',
+    geoSuccess: 'Located · sorted by distance',
+    geoFailDenied: 'You denied geolocation. Tap any pin on the map, or browse manually.',
+    geoFailUnavailable: 'Geolocation is not supported. Tap any pin on the map, or browse manually.',
+    geoFailTimeout: 'Geolocation timed out. Try again, or tap any pin on the map.',
+    geoFailGeneric: 'Geolocation failed. Tap any pin on the map, or browse manually.',
+    geoReset: '↺ Reset',
+    geoSortReset: 'Reset sort',
+    kmAway: '{n} km away',
+    mAway: '{n} m away',
+
+    // PWA install / update
+    pwaInstallTitle: '📱 Add to Home Screen',
+    pwaInstallBody: 'iOS: tap share → "Add to Home Screen". Open from the icon next time, even offline.',
+    pwaUpdateTitle: '✨ New version available',
+    pwaUpdateBody: 'Refresh to get the latest map and new points.',
+    pwaUpdateAction: 'Refresh',
 
     videosTag: '#003 · SEE IT HAPPEN',
     videosH2a: 'These scenes are <span class="text-ember">happening right now</span>.',

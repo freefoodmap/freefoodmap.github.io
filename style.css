@@ -333,6 +333,49 @@ html.js .reveal.visible { opacity: 1 !important; transform: translateY(0) !impor
   flex-shrink: 0;
 }
 
+/* ---------- Geolocation button state ---------- */
+#geo-locate:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+#geo-locate:not(:disabled):hover {
+  background: rgba(244, 165, 42, 0.12);
+  border-color: rgba(244, 165, 42, 0.4);
+}
+#geo-locate[data-located="1"] {
+  background: rgba(52, 211, 153, 0.12);
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+/* ---------- Popup distance line ---------- */
+.popup-distance {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed rgba(11, 18, 32, 0.15);
+  font-size: 0.75rem;
+  color: var(--ember);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ---------- PWA install/update banners ---------- */
+#pwa-install-hint, #pwa-update-hint {
+  animation: slideUp 0.4s ease-out;
+}
+@keyframes slideUp {
+  from { transform: translateY(120%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #pwa-install-hint, #pwa-update-hint { animation: none; }
+}
+
+/* ---------- iOS safe area (notch) ---------- */
+@supports (padding: env(safe-area-inset-top)) {
+  nav.fixed.top-0 { padding-top: env(safe-area-inset-top); height: calc(4rem + env(safe-area-inset-top)); }
+  #pwa-install-hint, #pwa-update-hint { bottom: calc(1rem + env(safe-area-inset-bottom)); }
+}
+
 /* ---------- Print friendliness ---------- */
 @media print {
   nav, footer, .video-card, #map { display: none; }
