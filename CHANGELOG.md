@@ -30,6 +30,9 @@ The two US-specific data cards on the hero now use global data; "美国" no long
 - The site is positioned as a **global** network ("The Network" in #ambassadors), not a US-centric one. The Xiao Tang story remains as the inspiration footnote and #story section.
 - This is a v1.5.x patch — no new i18n keys, no new files, no Tailwind rebuild needed.
 
+### Fixed (hotfix)
+- **SW cache version bump** (`sw.js` CACHE_VERSION `v1.5.0` → `v1.5.1`). The v1.5.0 SW shipped unchanged in v1.5.1, so existing visitors' browsers kept serving the v1.5.0 cache (with old hero stats `1/7` / `200+`) even after the server updated. Bumping the cache name forces the browser to install the new SW, which deletes the old `freefood-v1.5.0` cache in its `activate` handler and pre-caches fresh assets on `install`.
+
 ## [1.5.0] 2026-08-13 · PWA + "Find food near me"
 
 The site is now a Progressive Web App — installable to home screen, works offline, and locates the nearest free food distribution point to the user.
