@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.3] 2026-10-10 · Basemap fallback: AMap for users who can't reach Carto
+
+The dark Carto basemap was unreachable from some networks (notably mainland China, where `basemaps.cartocdn.com` is often blocked or timing out). Users in those networks saw a blank gray map with markers but no tiles — and assumed it was an "API key" problem. It wasn't: Carto's free basemap never required a key. The real issue was network reachability.
+
+This release adds an automatic Carto → AMap (高德) fallback so the map loads everywhere. No API key required for either provider; both are free for non-commercial / 公益 use.
+
+### Changed
+- **Dual basemap**: Carto `dark_all` is now the primary layer; AMap `webrd0[1-4].is.autonavi.com style=8` activates automatically when Carto tiles fail to load. Trigger: ≥4 `tileerror` events OR 0 ticks loaded within 4s of init.
+- **GCJ-02 conversion for AMap**: AMap tiles use the GCJ-02 (火星坐标) datum while the site's data uses WGS-84. Without conversion, mainland-China markers appear 50–500 m off from the basemap. `wgs84ToGcj02()` is applied to mainland-China (`China` only — HK uses WGS-84 in practice) markers + user geo-location when AMap is active. Non-China points and Carto mode bypass the transform.
+- **AMap tiles dark-filter via CSS**: AMap style 8 is light/vector. When AMap activates, the map container gets an `.amap-mode` class that applies `filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92) saturate(0.7)` to the tile pane — visually matching Carto's dark theme so the switch is invisible to users. Attribution block is double-inverted to stay legible.
+- **`renderMarkers` + `buildMapList`**: marker placement, list-item click → flyTo, and popup lookup all go through a new `markerCoords(p)` helper that returns GCJ-02 or WGS-84 based on `basemapMode`.
+- **`setupGeolocation`**: user geo-location (when AMap is active and the user is geographically inside CN bbox) is converted to GCJ-02 before flyTo.
+- **SW tile-CDN bypass list**: `isEmbedHost` regex in `sw.js` now also matches `autonavi` so AMap tile responses aren't cached by the service worker (would otherwise fill device storage).
+- **SW CACHE_VERSION** bumped to `v1.5.3` (existing visitors' browsers pick up the new app.js / style.css on next visit).
+
+### Kept (intentional)
+- Carto `dark_all` is still the primary layer; users who CAN reach it see no visual change.
+- HK points (`country: 'China (HK)'`) skip GCJ-02 transform — HK uses WGS-84 in practice.
+- Distance calculations use Haversine on WGS-84 regardless of mode — the 50–500 m GCJ-02 offset is noise at km-scale.
+- No new i18n keys, no new files, no Tailwind rebuild needed.
+
+### Notes
+- This is purely a runtime reachability fix. The site's data and architecture are unchanged.
+- If you're behind a strict firewall that blocks BOTH Carto and AMap, you'll still see a gray map — but that's a network-level block, not something the site can work around client-side.
+
 ## [1.5.2] 2026-10-10 · De-brand AndyZhuang + GitHub from user-facing copy
 
 The site now reads as a neutral volunteer project — no individual contributor attribution, no "GitHub" platform branding in user-facing text. The code still lives on GitHub (the issue tracker URL is preserved as a functional link), and the form backend still creates GitHub Issues, but neither is mentioned in copy the user reads.

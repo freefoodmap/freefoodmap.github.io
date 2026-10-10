@@ -16,9 +16,9 @@
  * - We never cache: video embeds (B 站 / YouTube), Leaflet CDN.
  *   Those handle their own offline behavior or fail gracefully.
  *
- * v1.5.2
+ * v1.5.3
  */
-const CACHE_VERSION = 'v1.5.2';
+const CACHE_VERSION = 'v1.5.3';
 const CACHE_NAME = `freefood-${CACHE_VERSION}`;
 
 // Core app shell — must be cached for offline boot
@@ -90,8 +90,10 @@ self.addEventListener('fetch', (event) => {
   // Only handle http(s) — skip chrome-extension://, data:, blob:, etc.
   if (!url.protocol.startsWith('http')) return;
 
-  // Skip third-party embeds (B 站 iframe, YouTube, etc.) — they handle themselves
-  const isEmbedHost = /bilibili\.com|player\.bilibili\.com|youtu(be\.com|\.be)|googleapis|gstatic|basemaps\.cartocdn|openstreetmap|unpkg|jsdelivr/.test(url.hostname);
+  // Skip third-party embeds (B 站 iframe, YouTube, etc.) and basemap tile CDNs
+  // (Carto, AMap, OSM). Tile CDNs serve thousands of small images per session;
+  // caching them in the SW would fill storage and they're already CDN-cached upstream.
+  const isEmbedHost = /bilibili\.com|player\.bilibili\.com|youtu(be\.com|\.be)|googleapis|gstatic|basemaps\.cartocdn|autonavi|openstreetmap|unpkg|jsdelivr/.test(url.hostname);
   if (isEmbedHost) return;
 
   // For same-origin requests

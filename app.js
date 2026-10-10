@@ -209,6 +209,47 @@
     });
   }
 
+  // ------- basemap mode -------
+  // Carto works for most of the world but is blocked/unreachable from
+  // mainland China. AMap (高德) is hosted inside CN and works there.
+  // 'carto' (default) | 'amap' (fallback after Carto fails to load tiles)
+  let basemapMode = 'carto';
+
+  // WGS-84 → GCJ-02 transform for points in mainland China.
+  // AMap tiles use GCJ-02 (火星坐标); without this transform, markers in
+  // China appear 50–500m off from the basemap. HK uses WGS-84 in practice,
+  // so we skip the transform for country === 'China (HK)'.
+  function wgs84ToGcj02(lat, lng) {
+    if (lng < 72.004 || lng > 137.8347 || lat < 0.8293 || lat > 55.8271) return [lat, lng];
+    let dLat = transformLatGCJ(lng - 105.0, lat - 35.0);
+    let dLng = transformLngGCJ(lng - 105.0, lat - 35.0);
+    const radLat = lat / 180.0 * Math.PI;
+    let magic = Math.sin(radLat);
+    magic = 1 - 0.00669342162296594323 * magic * magic;
+    const sqrtMagic = Math.sqrt(magic);
+    dLat = (dLat * 180.0) / ((6378245.0 * (1 - 0.00669342162296594323)) / (magic * sqrtMagic) * Math.PI);
+    dLng = (dLng * 180.0) / (6378245.0 / sqrtMagic * Math.cos(radLat) * Math.PI);
+    return [lat + dLat, lng + dLng];
+  }
+  function transformLatGCJ(x, y) {
+    let ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+    ret += (20.0 * Math.sin(6.0 * x * Math.PI) + 20.0 * Math.sin(2.0 * x * Math.PI)) * 2.0 / 3.0;
+    ret += (20.0 * Math.sin(y * Math.PI) + 40.0 * Math.sin(y / 3.0 * Math.PI)) * 2.0 / 3.0;
+    ret += (160.0 * Math.sin(y / 12.0 * Math.PI) + 320.0 * Math.sin(y * Math.PI / 30.0)) * 2.0 / 3.0;
+    return ret;
+  }
+  function transformLngGCJ(x, y) {
+    let ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+    ret += (20.0 * Math.sin(6.0 * x * Math.PI) + 20.0 * Math.sin(2.0 * x * Math.PI)) * 2.0 / 3.0;
+    ret += (20.0 * Math.sin(x * Math.PI) + 40.0 * Math.sin(x / 3.0 * Math.PI)) * 2.0 / 3.0;
+    ret += (150.0 * Math.sin(x / 12.0 * Math.PI) + 300.0 * Math.sin(x / 30.0 * Math.PI)) * 2.0 / 3.0;
+    return ret;
+  }
+  function markerCoords(p) {
+    if (basemapMode === 'amap' && p.country === 'China') return wgs84ToGcj02(p.lat, p.lng);
+    return [p.lat, p.lng];
+  }
+
   function initMap() {
     const el = $('#map-canvas');
     if (!el || typeof L === 'undefined') return;
@@ -222,11 +263,51 @@
       zoomControl: true
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> · © <a href="https://carto.com/attributions">CARTO</a> · ' + (currentLang === 'zh' ? '数据由志愿者整理' : 'Data curated by volunteers'),
+    const baseAttribution = currentLang === 'zh'
+      ? '数据由志愿者整理'
+      : 'Data curated by volunteers';
+
+    // Primary: Carto dark_all (free, no API key, works for most of the world)
+    const cartoLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> · © <a href="https://carto.com/attributions">CARTO</a> · ' + baseAttribution,
       subdomains: 'abcd',
       maxZoom: 19
-    }).addTo(leafletMap);
+    });
+    cartoLayer.addTo(leafletMap);
+
+    // Fallback: AMap (高德) — hosted inside mainland China, works where Carto is blocked.
+    // No API key required for basic tiles (non-commercial use). Tiles are light/vector;
+    // CSS filter inverts them to mimic Carto's dark theme.
+    const amapLayer = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+      attribution: '© <a href="https://lbs.amap.com/">高德地图 AutoNavi</a> · ' + baseAttribution,
+      subdomains: ['1', '2', '3', '4'],
+      maxZoom: 19
+    });
+
+    // Switch Carto → AMap if Carto tiles fail to load (network blocked, slow, etc.)
+    let cartoFailures = 0;
+    let switched = false;
+    function switchToAmap() {
+      if (switched || !leafletMap.hasLayer(cartoLayer)) return;
+      switched = true;
+      basemapMode = 'amap';
+      leafletMap.removeLayer(cartoLayer);
+      amapLayer.addTo(leafletMap);
+      // Apply dark CSS filter so AMap tiles visually match Carto's dark theme.
+      const container = leafletMap.getContainer();
+      if (container) container.classList.add('amap-mode');
+      // Re-render markers with GCJ-02 transform so CN points align with AMap tiles.
+      renderMarkers();
+    }
+    cartoLayer.on('tileerror', () => {
+      cartoFailures++;
+      if (cartoFailures >= 4) switchToAmap();
+    });
+    // Safety net: if no tiles loaded after 4s, assume blocked → switch.
+    setTimeout(() => {
+      const loaded = leafletMap.getContainer().querySelectorAll('.leaflet-tile-loaded').length;
+      if (loaded === 0) switchToAmap();
+    }, 4000);
 
     markerLayer = L.layerGroup().addTo(leafletMap);
     renderMarkers();
@@ -346,7 +427,7 @@
     sorted.forEach(p => {
       const isStory = p.id === 'us-la-sauce-pancake-tang';
       const icon = makeIcon(p.type, isStory);
-      const m = L.marker([p.lat, p.lng], { icon, title: p.name });
+      const m = L.marker(markerCoords(p), { icon, title: p.name });
       m.bindPopup(popupHTML(p), { maxWidth: 320 });
       m.addTo(markerLayer);
     });
@@ -394,10 +475,11 @@
         if (!p || !leafletMap) return;
         $$('.map-list-item').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
-        leafletMap.flyTo([p.lat, p.lng], 12, { duration: 1.0 });
+        const target = markerCoords(p);
+        leafletMap.flyTo(target, 12, { duration: 1.0 });
         setTimeout(() => {
           leafletMap.eachLayer(layer => {
-            if (layer._latlng && Math.abs(layer._latlng.lat - p.lat) < 0.0001 && Math.abs(layer._latlng.lng - p.lng) < 0.0001) {
+            if (layer._latlng && Math.abs(layer._latlng.lat - target[0]) < 0.0001 && Math.abs(layer._latlng.lng - target[1]) < 0.0001) {
               layer.openPopup();
             }
           });
@@ -433,7 +515,12 @@
           btn.disabled = false;
           btn.innerHTML = '<span class="text-base">✓</span><span>' + t('geoReset') + '</span>';
           if (status) { status.textContent = t('geoSuccess'); status.classList.remove('text-white/50'); status.classList.add('text-emerald-300'); }
-          if (leafletMap) leafletMap.flyTo([userLocation.lat, userLocation.lng], 9, { duration: 1.5 });
+          if (leafletMap) {
+            const u = (basemapMode === 'amap' && userLocation.lat > 16 && userLocation.lat < 54 && userLocation.lng > 73 && userLocation.lng < 136)
+              ? wgs84ToGcj02(userLocation.lat, userLocation.lng)
+              : [userLocation.lat, userLocation.lng];
+            leafletMap.flyTo(u, 9, { duration: 1.5 });
+          }
           renderMarkers();
         },
         (err) => {

@@ -49,6 +49,22 @@ body {
   border-color: var(--crust);
 }
 
+/* ---------- Leaflet basemap dark filter (AMap fallback) ----------
+   AMap style 8 tiles are light/vector. When Carto fails (blocked from
+   mainland China) we activate AMap and add `.amap-mode` to the map
+   container. The CSS filter inverts the tiles so the visual theme stays
+   consistent with Carto dark_all. */
+.amap-mode .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92) saturate(0.7);
+}
+/* Invert attribution text back so it stays legible on the now-dark tiles. */
+.amap-mode .leaflet-control-attribution {
+  filter: invert(1) hue-rotate(180deg);
+  background: rgba(255,255,255,0.7);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
 /* ---------- Leaflet popup overrides ---------- */
 .leaflet-popup-content-wrapper {
   background: var(--ink);
