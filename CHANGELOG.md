@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.1] 2026-10-10 · Hero data cards: global, not US-centric
+
+The two US-specific data cards on the hero now use global data; "美国" no longer appears on the homepage.
+
+### Changed
+- **Hero card #3** (`1/7` 美国饥饿率) → `1/3` 全球食物损失/浪费率 (UN SDG 12.3 · 2024)
+- **Hero card #4** (`200+` Feeding America 食品银行数) → `60+ 国` 全球食物银行网络 (GFBF · 2024)
+- **Video 1 tag** zh: `B 站 · 小唐美国游` → `B 站 · 小唐故事` ; en: `B 站 · Xiao Tang USA` → `B 站 · Xiao Tang Story`
+- **Video 3 title** zh: `2025.8.15 小唐酱香饼在美国 (70 分钟实录)` → `2025.8.15 小唐酱香饼实拍 (70 分钟实录)` ; en: `Xiao Tang in America (70-min uncut)` → `Xiao Tang pancakes, uncut (70 min)`
+- **step3D** (zh): `美国则要看 health permit` → `海外则要看 health permit`
+- **livePersonMeta** (i18n): `独闯美国` / `alone in America` → `独闯海外` / `alone abroad`
+- **storyP4** (en) + **storyTL2026bD** (en): `Chinese-American residents` → `Chinese-heritage residents`
+
+### Kept (intentional)
+- "Feeding America" (org name) — referenced in i18n step4D (en + zh) as one of multiple food bank options, and in `footerDataList` as a data source. These are proper nouns (the actual organization), not country references.
+- Map popups showing `USA` (country code) and `Feeding America (总部)` for the data points in `data.js` — these are real organizations with real addresses; removing them would be data loss.
+- Inspiration footnote: `一位在洛杉矶免费发酱香饼的 90 后` — 洛杉矶 is a city, not a country; consistent with the AI-era story framing.
+
+### Notes
+- The hero now leads with **global** numbers: 7.3亿+ hungry (UN WFP) · 13亿吨 wasted (FAO) · 1/3 lost (UN SDG 12.3) · 60+ countries with food bank networks (GFBF).
+- The site is positioned as a **global** network ("The Network" in #ambassadors), not a US-centric one. The Xiao Tang story remains as the inspiration footnote and #story section.
+- This is a v1.5.x patch — no new i18n keys, no new files, no Tailwind rebuild needed.
+
 ## [1.5.0] 2026-08-13 · PWA + "Find food near me"
 
 The site is now a Progressive Web App — installable to home screen, works offline, and locates the nearest free food distribution point to the user.
