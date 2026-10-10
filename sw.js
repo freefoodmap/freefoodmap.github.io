@@ -16,9 +16,9 @@
  * - We never cache: video embeds (B 站 / YouTube), Leaflet CDN.
  *   Those handle their own offline behavior or fail gracefully.
  *
- * v1.5.1
+ * v1.5.2
  */
-const CACHE_VERSION = 'v1.5.1';
+const CACHE_VERSION = 'v1.5.2';
 const CACHE_NAME = `freefood-${CACHE_VERSION}`;
 
 // Core app shell — must be cached for offline boot

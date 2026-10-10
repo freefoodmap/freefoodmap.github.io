@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.2] 2026-10-10 · De-brand AndyZhuang + GitHub from user-facing copy
+
+The site now reads as a neutral volunteer project — no individual contributor attribution, no "GitHub" platform branding in user-facing text. The code still lives on GitHub (the issue tracker URL is preserved as a functional link), and the form backend still creates GitHub Issues, but neither is mentioned in copy the user reads.
+
+### Changed
+- **`ambF1K`** (zh + en): `via GitHub @AndyZhuang` → `via email · open@freefoodmap.org` — founder card no longer attributes a specific GitHub handle
+- **`ambS2K` / `ambS5K`** (zh + en): `GitHub PR welcome` → `PR 欢迎` / `PRs welcome`
+- **`ambJoinP`** (zh + en): drop `GitHub` from "One GitHub PR or one email is enough to start"
+- **`ambJoin1D`** (zh + en): drop `on GitHub` from "Open an issue / PR on GitHub"
+- **`ambJoin2D`** (zh + en): drop `in the GitHub README and ` — name only appears on the site's #ambassadors section
+- **`ambJoin3D`** (zh + en): `GitHub Issues` → `public issue tracker` — roadmap is no longer platform-named
+- **`ambCTAGit`** (zh + en): `GitHub · 提个 issue / PR →` → `提个 issue / PR →` / `Open an issue / PR →`
+- **`formHelp`** (zh): drop `(README 见 GitHub)` parenthetical
+- **`formSubmitNote`** (zh + en): drop `进入 GitHub,` / `goes to GitHub,` — form backend version
+- **`formSuccessSub`** (zh + en): drop `GitHub ` — review queue is no longer platform-named
+- **`footerJoinList`** (zh + en): drop `(待托管到 GitHub)` / `(GitHub soon)`
+- **HTML default fallback text** in `index.html`: all `data-i18n` default values synced to match new i18n.js (for first paint before JS loads)
+- **Engineer role tech badge** (index.html line 546): `GitHub` → `git` (lowercase, neutralizes platform branding)
+- **Default href `<a href="https://github.com/freefoodmap/freefoodmap.github.io/issues">`** — KEPT. The URL is the actual issue tracker. Visible text now reads `提个 issue / PR →` / `Open an issue / PR →`.
+
+### Kept (intentional)
+- The form backend still POSTs to `/api/submit` and the API server still creates GitHub Issues — the architecture is unchanged. Only the user-facing copy no longer says "GitHub".
+- `package-lock.json` keeps its npm metadata `resolved` URLs (auto-generated, never user-visible).
+
+### Notes
+- This is purely a copy scrub + SW cache bump (`v1.5.1` → `v1.5.2`). No new i18n keys, no new files, no architecture changes.
+- The site still positions as global + volunteer-run + open-source — just without naming a specific platform or individual.
+
 ## [1.5.1] 2026-10-10 · Hero data cards: global, not US-centric
 
 The two US-specific data cards on the hero now use global data; "美国" no longer appears on the homepage.
